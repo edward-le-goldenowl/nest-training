@@ -25,6 +25,9 @@
       ],
       "@interfaces/*": [
         "src/interfaces/*"
+      ],
+      "@utils/*": [
+        "src/utils/*"
       ]
     },
     "incremental": true,
