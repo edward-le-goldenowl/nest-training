@@ -10,6 +10,23 @@
     "sourceMap": true,
     "outDir": "./dist",
     "baseUrl": "./",
+    "paths": {
+      "@config/*": [
+        "src/config/*"
+      ],
+      "@constants/*": [
+        "src/constants/*"
+      ],
+      "@auth/*": [
+        "src/auth/*"
+      ],
+      "@helpers/*": [
+        "src/helpers/*"
+      ],
+      "@interfaces/*": [
+        "src/interfaces/*"
+      ]
+    },
     "incremental": true,
     "skipLibCheck": true,
     "strictNullChecks": true,
