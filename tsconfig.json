@@ -28,6 +28,12 @@
       ],
       "@utils/*": [
         "src/utils/*"
+      ],
+      "@database/*": [
+        "src/database/*"
+      ],
+      "@models/*": [
+        "src/models/*"
       ]
     },
     "incremental": true,
