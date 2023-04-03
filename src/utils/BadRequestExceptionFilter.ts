@@ -4,23 +4,22 @@ import {
   ArgumentsHost,
   BadRequestException,
 } from '@nestjs/common';
-import { Request, Response } from 'express';
+import { Response } from 'express';
+
+import { errorMessages } from '@constants/messages';
 
 @Catch(BadRequestException)
 export class BadRequestExceptionFilter implements ExceptionFilter {
   catch(exception: BadRequestException, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
-    const request = ctx.getRequest<Request>();
     const status = exception.getStatus();
     const exceptionResponse = exception.getResponse();
-    response
-      .status(status)
-      // you can manipulate the response here
-      .json({
-        ...Object(exceptionResponse),
-        timestamp: new Date().toISOString(),
-        path: request.url,
-      });
+    const message = exception.message || errorMessages.SOME_THING_WENT_WRONG;
+    response.status(status).json({
+      ...Object(exceptionResponse),
+      message,
+      timestamp: new Date().toISOString(),
+    });
   }
 }

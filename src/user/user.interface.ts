@@ -20,5 +20,11 @@ export interface ISignUpData {
 }
 
 export interface ISignUpResponse {
-  user: IAccountData;
+  id: string;
+  username: string;
+  email: string;
+  dob: Date | string;
+  fullName: string;
+  createdAt: Date;
+  updatedAt: Date;
 }

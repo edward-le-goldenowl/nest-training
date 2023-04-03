@@ -1,4 +1,11 @@
-import { Column, Entity, PrimaryColumn, OneToOne, JoinColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  PrimaryColumn,
+  OneToOne,
+  JoinColumn,
+  BeforeUpdate,
+} from 'typeorm';
 import UserProfile from './userProfile.entity';
 
 @Entity()
@@ -14,6 +21,17 @@ class Account {
 
   @Column()
   public userProfileId: string;
+
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  createdAt: Date;
+
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  updated_at: Date;
+
+  @BeforeUpdate()
+  updateTimestamps() {
+    this.updated_at = new Date();
+  }
 
   @OneToOne(() => UserProfile, (userProfile) => userProfile.account)
   @JoinColumn()
