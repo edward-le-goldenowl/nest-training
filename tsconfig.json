@@ -17,8 +17,8 @@
       "@constants/*": [
         "src/constants/*"
       ],
-      "@auth/*": [
-        "src/auth/*"
+      "@user/*": [
+        "src/user/*"
       ],
       "@helpers/*": [
         "src/helpers/*"
@@ -32,9 +32,6 @@
       "@database/*": [
         "src/database/*"
       ],
-      "@models/*": [
-        "src/models/*"
-      ]
     },
     "incremental": true,
     "skipLibCheck": true,
