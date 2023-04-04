@@ -1,7 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, FindOneOptions } from 'typeorm';
-import { v4 as uuidv4 } from 'uuid';
 import * as bcrypt from 'bcrypt';
 
 import { errorMessages } from '@constants/messages';
@@ -9,10 +8,12 @@ import { errorMessages } from '@constants/messages';
 import AccountEntity from './models/account.entity';
 import UserProfileEntity from './models/userProfile.entity';
 import {
-  ISignUpData,
+  IRegisterData,
   IAccountData,
   IUserProfileData,
-  ISignUpResponse,
+  IRegisterResponse,
+  IAccountQueryResponse,
+  IUserProfileQueryResponse,
 } from './user.interface';
 
 @Injectable()
@@ -24,19 +25,33 @@ export default class UserService {
     private userProfileRepository: Repository<UserProfileEntity>,
   ) {}
 
-  async getByEmail(email: string): Promise<UserProfileEntity | null> {
-    const findOptions: FindOneOptions<UserProfileEntity> = {
+  public async getUserProfileById(
+    id: string,
+  ): Promise<IUserProfileQueryResponse | null> {
+    const findOptions: FindOneOptions<IUserProfileQueryResponse> = {
       where: {
-        email: email,
+        id: id,
       },
     };
     const user = await this.userProfileRepository.findOne(findOptions);
     return user;
   }
 
-  async create(signUpData: ISignUpData): Promise<ISignUpResponse> {
+  public async getAccountByEmail(
+    email: string,
+  ): Promise<IAccountQueryResponse | null> {
+    const findOptions: FindOneOptions<IAccountQueryResponse> = {
+      where: {
+        email: email,
+      },
+    };
+    const user = await this.accountRepository.findOne(findOptions);
+    return user;
+  }
+
+  public async create(signUpData: IRegisterData): Promise<IRegisterResponse> {
     try {
-      const user = await this.getByEmail(signUpData.email);
+      const user = await this.getAccountByEmail(signUpData.email);
       if (user) {
         throw new HttpException(
           errorMessages.EMAIL_ALREADY_EXISTS,
@@ -45,13 +60,10 @@ export default class UserService {
       }
       const hashedPassword = await bcrypt.hash(signUpData.password, 10);
       const accountData: IAccountData = {
-        id: uuidv4(),
-        username: signUpData.username,
+        email: signUpData.email,
         password: hashedPassword,
       };
       const userProfileData: IUserProfileData = {
-        id: uuidv4(),
-        email: signUpData.email,
         fullName: signUpData.fullName,
         dob: signUpData.dob,
       };
@@ -66,8 +78,7 @@ export default class UserService {
       const savedAccount = await this.accountRepository.save(newUserAccount);
       return {
         id: savedAccount.id,
-        username: savedAccount.username,
-        email: savedUserProfile.email,
+        email: savedAccount.email,
         fullName: savedUserProfile.fullName,
         dob: savedUserProfile.dob,
         createdAt: savedUserProfile.createdAt,
@@ -76,7 +87,10 @@ export default class UserService {
     } catch (err) {
       console.error(err);
       if (err) throw err;
-      throw new HttpException('', HttpStatus.BAD_REQUEST);
+      throw new HttpException(
+        errorMessages.REGISTER_FAILED,
+        HttpStatus.BAD_REQUEST,
+      );
     }
   }
 }

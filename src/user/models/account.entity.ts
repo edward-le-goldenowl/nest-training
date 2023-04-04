@@ -1,20 +1,20 @@
 import {
   Column,
   Entity,
-  PrimaryColumn,
   OneToOne,
   JoinColumn,
   BeforeUpdate,
+  PrimaryGeneratedColumn,
 } from 'typeorm';
 import UserProfile from './userProfile.entity';
 
 @Entity()
 class Account {
-  @PrimaryColumn()
+  @PrimaryGeneratedColumn('uuid')
   public id: string;
 
-  @Column()
-  public username: string;
+  @Column({ unique: true })
+  public email: string;
 
   @Column()
   public password: string;

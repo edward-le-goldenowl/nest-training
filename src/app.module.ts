@@ -3,6 +3,7 @@ import * as Joi from '@hapi/joi';
 import { ConfigModule } from '@nestjs/config';
 
 import { UserModule } from '@user/user.module';
+import { AuthenticationModule } from '@auth/auth.module';
 import { DatabaseModule } from '@database/database.module';
 
 import { AppController } from './app.controller';
@@ -23,6 +24,7 @@ import { TestModule } from './test/test.module';
     }),
     DatabaseModule,
     UserModule,
+    AuthenticationModule,
     TestModule,
   ],
   controllers: [AppController],

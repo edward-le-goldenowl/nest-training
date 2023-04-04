@@ -9,18 +9,14 @@ import {
 } from 'class-validator';
 import { Match } from './match.decorator';
 
-export class SignUpDTO {
+export class RegisterDTO {
   @IsNotEmpty()
-  @IsString()
-  username: string;
+  @IsEmail()
+  email: string;
 
   @IsNotEmpty()
   @IsString()
   fullName: string;
-
-  @IsNotEmpty()
-  @IsEmail()
-  email: string;
 
   @IsDateString()
   dob: Date;

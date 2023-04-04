@@ -1,27 +1,37 @@
 export interface IAccountData {
-  id: string;
-  username: string;
+  email: string;
   password: string;
+}
+
+export interface IAccountQueryResponse {
+  id: string;
+  email: string;
+  userProfileId: string;
+  password?: string;
+}
+
+export interface IUserProfileQueryResponse {
+  id: string;
+  fullName: string;
+  dob: Date;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface IUserProfileData {
-  id: string;
-  email: string;
   fullName: string;
   dob: Date | string;
 }
 
-export interface ISignUpData {
-  username: string;
+export interface IRegisterData {
+  email: string;
   password: string;
-  email: string;
   dob: Date | string;
   fullName: string;
 }
 
-export interface ISignUpResponse {
+export interface IRegisterResponse {
   id: string;
-  username: string;
   email: string;
   dob: Date | string;
   fullName: string;

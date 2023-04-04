@@ -32,6 +32,9 @@
       "@database/*": [
         "src/database/*"
       ],
+      "@auth/*": [
+        "src/auth/*"
+      ],
     },
     "incremental": true,
     "skipLibCheck": true,

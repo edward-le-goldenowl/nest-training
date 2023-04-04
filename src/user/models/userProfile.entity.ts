@@ -1,13 +1,16 @@
-import { Column, Entity, PrimaryColumn, OneToOne, BeforeUpdate } from 'typeorm';
+import {
+  Column,
+  Entity,
+  OneToOne,
+  BeforeUpdate,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import Account from './account.entity';
 
 @Entity()
 class UserProfile {
-  @PrimaryColumn()
+  @PrimaryGeneratedColumn('uuid')
   public id: string;
-
-  @Column()
-  public email: string;
 
   @Column()
   public fullName: string;
