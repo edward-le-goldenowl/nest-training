@@ -5,6 +5,7 @@ import {
   BeforeUpdate,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+
 import Account from './account.entity';
 
 @Entity()

@@ -1,15 +1,26 @@
 import { Module } from '@nestjs/common';
+import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
+import { ConfigModule } from '@nestjs/config';
 
 import { UserModule } from '@user/user.module';
 
-import { LocalStrategy } from './local.strategy';
+import {
+  LocalStrategy,
+  AccessTokenStrategy,
+  RefreshTokenStrategy,
+} from './strategies';
 import { AuthenticationService } from './auth.service';
 import { AuthenticationController } from './auth.controller';
 
 @Module({
-  imports: [UserModule, PassportModule],
-  providers: [AuthenticationService, LocalStrategy],
+  imports: [UserModule, PassportModule, ConfigModule, JwtModule],
+  providers: [
+    AuthenticationService,
+    LocalStrategy,
+    AccessTokenStrategy,
+    RefreshTokenStrategy,
+  ],
   controllers: [AuthenticationController],
   exports: [AuthenticationService],
 })

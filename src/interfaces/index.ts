@@ -1,1 +1,2 @@
-export * from './APIResponse.interface';
+export * from './apiResponse.interface';
+export * from './request.interface';

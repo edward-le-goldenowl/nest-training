@@ -10,7 +10,7 @@ import { map } from 'rxjs/operators';
 import { IResponseBase } from '@interfaces/index';
 
 @Injectable()
-export default class TransformInterceptor<T>
+export default class TransformResponseInterceptor<T>
   implements NestInterceptor<T, IResponseBase<T>>
 {
   intercept(

@@ -10,14 +10,6 @@ export interface IAccountQueryResponse {
   password?: string;
 }
 
-export interface IUserProfileQueryResponse {
-  id: string;
-  fullName: string;
-  dob: Date;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
 export interface IUserProfileData {
   fullName: string;
   dob: Date | string;
@@ -32,9 +24,14 @@ export interface IRegisterData {
 
 export interface IRegisterResponse {
   id: string;
+}
+
+export interface IUserProfileResponse {
+  id: string;
   email: string;
-  dob: Date | string;
-  fullName: string;
+  fullname: string;
+  refreshToken?: string;
+  dob: Date;
   createdAt: Date;
   updatedAt: Date;
 }

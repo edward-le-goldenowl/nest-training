@@ -6,6 +6,8 @@ import {
   BeforeUpdate,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { Exclude } from 'class-transformer';
+
 import UserProfile from './userProfile.entity';
 
 @Entity()
@@ -16,21 +18,25 @@ class Account {
   @Column({ unique: true })
   public email: string;
 
+  @Exclude({ toPlainOnly: true })
   @Column()
   public password: string;
 
   @Column()
   public userProfileId: string;
 
+  @Column({ nullable: true })
+  refreshToken: string;
+
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-  updated_at: Date;
+  updatedAt: Date;
 
   @BeforeUpdate()
   updateTimestamps() {
-    this.updated_at = new Date();
+    this.updatedAt = new Date();
   }
 
   @OneToOne(() => UserProfile, (userProfile) => userProfile.account)

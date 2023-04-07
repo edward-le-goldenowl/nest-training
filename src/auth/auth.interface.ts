@@ -1,14 +1,9 @@
-export interface ILoginData {
-  email: string;
-  password: string;
+export interface ICurrentUserResponse {
+  accessToken: string;
+  refreshToken: string;
 }
 
-export interface ILoginResponse {
+export interface IJwtPayload {
   id: string;
-  userProfileId: string;
   email: string;
-  dob: Date | string;
-  fullName: string;
-  createdAt: Date;
-  updatedAt: Date;
 }

@@ -35,6 +35,9 @@
       "@auth/*": [
         "src/auth/*"
       ],
+      "@common/*": [
+        "src/common/*"
+      ],
     },
     "incremental": true,
     "skipLibCheck": true,

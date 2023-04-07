@@ -1,48 +1,112 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
+import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
 
-import { errorMessages } from '@constants/messages';
 import UserService from '@user/user.service';
+import { errorMessages } from '@constants/messages';
+import { IRequest } from '@interfaces/index';
+import { IAccountQueryResponse } from '@user/user.interface';
 
-import { ILoginResponse } from './auth.interface';
+import { ICurrentUserResponse } from './auth.interface';
 
 @Injectable()
 export class AuthenticationService {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly configService: ConfigService,
+    private readonly userService: UserService,
+    private readonly jwtService: JwtService,
+  ) {}
 
-  public async getAuthenticatedUser(
-    email: string,
-    plainTextPassword: string,
-  ): Promise<ILoginResponse> {
+  public async logout(req: IRequest) {
     try {
-      const account = await this.userService.getAccountByEmail(email);
-      if (account && account.password) {
-        await this.verifyPassword(plainTextPassword, account.password);
-        const userProfile = await this.userService.getUserProfileById(
-          account.userProfileId,
+      const user = req.user;
+      if (user) {
+        const id = user['id'];
+        return this.userService.removeRefreshTokenByid(id);
+      }
+      throw new HttpException(
+        errorMessages.TOKEN_NOT_FOUND,
+        HttpStatus.BAD_REQUEST,
+      );
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      } else {
+        console.error(error);
+        throw new HttpException(
+          errorMessages.SOME_THING_WENT_WRONG,
+          HttpStatus.INTERNAL_SERVER_ERROR,
         );
-        if (userProfile)
-          return {
-            id: account.id,
-            userProfileId: account.userProfileId,
-            email: account.email,
-            fullName: userProfile.fullName,
-            dob: userProfile.dob,
-            createdAt: userProfile.createdAt,
-            updatedAt: userProfile.updatedAt,
-          };
+      }
+    }
+  }
+
+  public async login(req: IRequest): Promise<ICurrentUserResponse> {
+    try {
+      const account = req.user;
+      if (account && account.userProfileId) {
+        const tokens = await this.getTokens(account.id, account.email);
+        await this.userService.updateRefreshTokenByid(
+          account.id,
+          tokens.refreshToken,
+        );
+        const refreshTokenCookie = `refresh_token=${
+          tokens.refreshToken
+        }; HttpOnly; Path=/; Max-Age=${
+          this.configService.get('JWT_REFRESH_EXPIRATION_TIME') * 24 * 3600
+        }`;
+        req.res.setHeader('Set-Cookie', [refreshTokenCookie]);
+        return {
+          accessToken: tokens.accessToken,
+          refreshToken: tokens.refreshToken,
+        };
       }
       throw new HttpException(
         errorMessages.LOGIN_FAILED,
         HttpStatus.UNAUTHORIZED,
       );
     } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      } else {
+        console.error(error);
+        throw new HttpException(
+          errorMessages.SOME_THING_WENT_WRONG,
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
+    }
+  }
+
+  public async validateUser(
+    email: string,
+    plainTextPassword: string,
+  ): Promise<IAccountQueryResponse> {
+    try {
+      const account = await this.userService.getAccountByEmail(email);
+      if (account && account.password) {
+        await this.verifyPassword(plainTextPassword, account.password);
+        delete account.password;
+        return account;
+      }
       throw new HttpException(
         errorMessages.LOGIN_FAILED,
         HttpStatus.UNAUTHORIZED,
       );
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      } else {
+        console.error(error);
+        throw new HttpException(
+          errorMessages.SOME_THING_WENT_WRONG,
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
     }
   }
+
   private async verifyPassword(
     plainTextPassword: string,
     hashedPassword: string,
@@ -56,6 +120,89 @@ export class AuthenticationService {
         errorMessages.LOGIN_FAILED,
         HttpStatus.UNAUTHORIZED,
       );
+    }
+  }
+
+  public async getTokens(id: string, email: string) {
+    const [accessToken, refreshToken] = await Promise.all([
+      this.jwtService.signAsync(
+        {
+          id,
+          email,
+        },
+        {
+          secret: this.configService.get<string>('JWT_ACCESS_SECRET'),
+          expiresIn: `${this.configService.get<string>(
+            'JWT_ACCESS_EXPIRATION_TIME',
+          )}m`,
+        },
+      ),
+      this.jwtService.signAsync(
+        {
+          id,
+          email,
+        },
+        {
+          secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
+          expiresIn: `${this.configService.get<string>(
+            'JWT_REFRESH_EXPIRATION_TIME',
+          )}d`,
+        },
+      ),
+    ]);
+
+    return {
+      accessToken,
+      refreshToken,
+    };
+  }
+
+  async refreshTokens(
+    req: IRequest,
+  ): Promise<ICurrentUserResponse | undefined> {
+    try {
+      const id = req.user['id'];
+      const refreshToken = req.user['refreshToken'];
+      const user = await this.userService.getUserProfileById(id);
+      console.log(
+        '🚀 ~ file: auth.service.ts:167 ~ AuthenticationService ~ user:',
+        user,
+      );
+      if (!user || !user.refreshToken)
+        throw new HttpException(
+          errorMessages.ACCESS_DENIED,
+          HttpStatus.FORBIDDEN,
+        );
+      console.log('RUN');
+      const refreshTokenMatches = await bcrypt.compare(
+        refreshToken,
+        user.refreshToken,
+      );
+      console.log(
+        '🚀 ~ file: auth.service.ts:176 ~ AuthenticationService ~ refreshTokenMatches:',
+        refreshTokenMatches,
+      );
+      if (!refreshTokenMatches)
+        throw new HttpException(
+          errorMessages.ACCESS_DENIED,
+          HttpStatus.FORBIDDEN,
+        );
+      const tokens = await this.getTokens(user.id, user.email);
+      await this.userService.updateRefreshTokenByid(
+        user.id,
+        tokens.refreshToken,
+      );
+      return tokens;
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      } else {
+        console.error(error);
+        throw new HttpException(
+          errorMessages.SOME_THING_WENT_WRONG,
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
     }
   }
 }
