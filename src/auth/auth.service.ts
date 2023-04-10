@@ -1,10 +1,18 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  BadRequestException,
+  UnauthorizedException,
+  ForbiddenException,
+} from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 
 import UserService from '@user/user.service';
 import { errorMessages } from '@constants/messages';
+import { errorCodes } from '@constants/errorCodes';
 import { IRequest } from '@interfaces/index';
 import { IAccountQueryResponse } from '@user/user.interface';
 
@@ -28,10 +36,10 @@ export class AuthenticationService {
         ]);
         return this.userService.removeRefreshTokenById(id);
       }
-      throw new HttpException(
-        errorMessages.TOKEN_NOT_FOUND,
-        HttpStatus.BAD_REQUEST,
-      );
+      throw new BadRequestException(errorMessages.TOKEN_NOT_FOUND, {
+        cause: new Error(),
+        description: errorCodes.ERR_LOG_OUT,
+      });
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;
@@ -65,10 +73,10 @@ export class AuthenticationService {
           refreshToken: tokens.refreshToken,
         };
       }
-      throw new HttpException(
-        errorMessages.LOGIN_FAILED,
-        HttpStatus.UNAUTHORIZED,
-      );
+      throw new UnauthorizedException(errorMessages.LOGIN_FAILED, {
+        cause: new Error(),
+        description: errorCodes.ERR_LOGIN_FAILED,
+      });
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;
@@ -93,10 +101,10 @@ export class AuthenticationService {
         delete account.password;
         return account;
       }
-      throw new HttpException(
-        errorMessages.LOGIN_FAILED,
-        HttpStatus.UNAUTHORIZED,
-      );
+      throw new UnauthorizedException(errorMessages.LOGIN_FAILED, {
+        cause: new Error(),
+        description: errorCodes.ERR_LOGIN_FAILED,
+      });
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;
@@ -119,10 +127,10 @@ export class AuthenticationService {
       hashedPassword,
     );
     if (!isPasswordMatching) {
-      throw new HttpException(
-        errorMessages.LOGIN_FAILED,
-        HttpStatus.UNAUTHORIZED,
-      );
+      throw new UnauthorizedException(errorMessages.LOGIN_FAILED, {
+        cause: new Error(),
+        description: errorCodes.ERR_LOGIN_FAILED,
+      });
     }
   }
 
@@ -168,19 +176,19 @@ export class AuthenticationService {
       const refreshToken = req.user['refreshToken'];
       const user = await this.userService.getAccountById(id);
       if (!user || !user.refreshToken)
-        throw new HttpException(
-          errorMessages.ACCESS_DENIED,
-          HttpStatus.FORBIDDEN,
-        );
+        throw new ForbiddenException(errorMessages.ACCESS_DENIED, {
+          cause: new Error(),
+          description: errorCodes.ERR_REFRESH_TOKEN,
+        });
       const refreshTokenMatches = await bcrypt.compare(
         refreshToken,
         user.refreshToken,
       );
       if (!refreshTokenMatches)
-        throw new HttpException(
-          errorMessages.ACCESS_DENIED,
-          HttpStatus.FORBIDDEN,
-        );
+        throw new ForbiddenException(errorMessages.ACCESS_DENIED, {
+          cause: new Error(),
+          description: errorCodes.ERR_REFRESH_TOKEN,
+        });
       const tokens = await this.getTokens(user.id, user.email);
       await this.userService.updateRefreshTokenById(
         user.id,

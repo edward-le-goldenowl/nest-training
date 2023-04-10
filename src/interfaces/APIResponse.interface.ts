@@ -1,5 +1,5 @@
 export interface IResponseBase<T> {
-  errorCode?: string;
+  error?: string;
   message: string;
   data?: T;
 }

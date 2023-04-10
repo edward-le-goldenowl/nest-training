@@ -36,7 +36,7 @@ export default class UserController {
     return {
       data: { user: response },
       message: successMessages.SUCCESS,
-      errorCode: '',
+      error: '',
     };
   }
 
@@ -50,7 +50,7 @@ export default class UserController {
     return {
       data: { user: response },
       message: successMessages.SUCCESS,
-      errorCode: '',
+      error: '',
     };
   }
 
@@ -63,7 +63,7 @@ export default class UserController {
     return {
       data: null,
       message: successMessages.SUCCESS,
-      errorCode: '',
+      error: '',
     };
   }
 }

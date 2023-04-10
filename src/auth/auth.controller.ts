@@ -36,7 +36,7 @@ export class AuthenticationController {
     return {
       data: response,
       message: successMessages.SUCCESS,
-      errorCode: '',
+      error: '',
     };
   }
 
@@ -48,7 +48,7 @@ export class AuthenticationController {
     return {
       data: null,
       message: successMessages.SUCCESS,
-      errorCode: '',
+      error: '',
     };
   }
 
@@ -62,7 +62,7 @@ export class AuthenticationController {
     return {
       data: response,
       message: successMessages.SUCCESS,
-      errorCode: '',
+      error: '',
     };
   }
 }

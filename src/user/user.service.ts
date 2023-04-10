@@ -1,8 +1,15 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 
+import { errorCodes } from '@constants/errorCodes';
 import { errorMessages } from '@constants/messages';
 
 import AccountEntity from './entities/account.entity';
@@ -32,10 +39,10 @@ export default class UserService {
         .where('account.id = :id', { id })
         .getOne();
       if (!account)
-        throw new HttpException(
-          errorMessages.NOT_FOUND_USER,
-          HttpStatus.NOT_FOUND,
-        );
+        throw new NotFoundException(errorMessages.NOT_FOUND_USER, {
+          cause: new Error(),
+          description: errorCodes.ERR_NOT_FOUND_USER,
+        });
       await this.accountRepository
         .createQueryBuilder('account')
         .softDelete()
@@ -77,10 +84,10 @@ export default class UserService {
         .where('account.id = :id', { id })
         .getRawOne();
       if (response) return response;
-      throw new HttpException(
-        errorMessages.NOT_FOUND_USER,
-        HttpStatus.NOT_FOUND,
-      );
+      throw new NotFoundException(errorMessages.NOT_FOUND_USER, {
+        cause: new Error(),
+        description: errorCodes.ERR_NOT_FOUND_USER,
+      });
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;
@@ -130,10 +137,10 @@ export default class UserService {
     try {
       const user = await this.findExistingAccountByEmail(registerData.email);
       if (user) {
-        throw new HttpException(
-          errorMessages.EMAIL_ALREADY_EXISTS,
-          HttpStatus.CONFLICT,
-        );
+        throw new ConflictException(errorMessages.EMAIL_ALREADY_EXISTS, {
+          cause: new Error(),
+          description: errorCodes.ERR_EMAIL_ALREADY_EXIST,
+        });
       }
       const hashedPassword = await bcrypt.hash(registerData.password, 10);
       const accountData: IAccountData = {

@@ -6,6 +6,7 @@ import TransformResponseInterceptor from '@utils/response.interceptor';
 import { BadRequestExceptionFilter } from '@utils/badRequestExceptionFilter';
 
 import { AppModule } from './app.module';
+import { ExcludeNullInterceptor } from '@utils/excludeNull.interceptor';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -13,7 +14,7 @@ async function bootstrap() {
   app.setGlobalPrefix('api');
   app.useGlobalPipes(new ValidationPipe());
   app.useGlobalInterceptors(new TransformResponseInterceptor());
-  // app.useGlobalInterceptors(new CamelCaseInterceptor());
+  app.useGlobalInterceptors(new ExcludeNullInterceptor());
   app.useGlobalFilters(new BadRequestExceptionFilter());
   app.enableVersioning({
     type: VersioningType.URI,
