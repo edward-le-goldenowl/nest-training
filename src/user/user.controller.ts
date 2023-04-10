@@ -2,7 +2,6 @@ import {
   Body,
   Req,
   Controller,
-  SetMetadata,
   Post,
   Get,
   Delete,
@@ -17,6 +16,7 @@ import {
 import { IResponseBase, IRequest } from '@interfaces/index';
 import { successMessages } from '@constants/messages';
 import { AccessTokenGuard, RolesGuard } from '@common/guards';
+import { Roles } from '@common/guards/roles.decorator';
 
 import { RegisterDTO } from './dto/user.dto';
 import { IRegisterResponse, IUserProfileResponse } from './user.interface';
@@ -57,7 +57,7 @@ export default class UserController {
   @UseGuards(AccessTokenGuard, RolesGuard)
   @HttpCode(HttpStatus.OK)
   @Delete(['/delete/:id'])
-  @SetMetadata('roles', ['admin'])
+  @Roles('admin')
   async deleteUser(@Param('id') id: string): Promise<IResponseBase<null>> {
     await this.userService.deleteAccountById(id);
     return {
