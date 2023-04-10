@@ -6,6 +6,8 @@ import {
   Matches,
   IsEmail,
   IsDateString,
+  IsIn,
+  IsOptional,
 } from 'class-validator';
 import { Match } from './match.decorator';
 
@@ -35,4 +37,18 @@ export class RegisterDTO {
   @MaxLength(20)
   @Match('password')
   passwordConfirm: string;
+
+  @IsIn(['admin', 'member'])
+  role: string;
+}
+
+export class UpdateProfileDTO {
+  @IsOptional()
+  @IsNotEmpty()
+  @IsString()
+  fullName: string;
+
+  @IsOptional()
+  @IsDateString()
+  dob: string;
 }

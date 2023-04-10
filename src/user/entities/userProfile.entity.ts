@@ -3,6 +3,7 @@ import {
   Entity,
   OneToOne,
   BeforeUpdate,
+  DeleteDateColumn,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -24,6 +25,9 @@ class UserProfile {
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   updatedAt: Date;
+
+  @DeleteDateColumn()
+  public deletedAt: Date;
 
   @BeforeUpdate()
   updateTimestamps() {

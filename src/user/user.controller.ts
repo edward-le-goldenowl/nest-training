@@ -4,9 +4,13 @@ import {
   Controller,
   Post,
   Get,
+  Delete,
+  Param,
   HttpCode,
   UseGuards,
   HttpStatus,
+  UseInterceptors,
+  ClassSerializerInterceptor,
 } from '@nestjs/common';
 
 import { IResponseBase, IRequest } from '@interfaces/index';
@@ -21,6 +25,7 @@ import UserService from './user.service';
 export default class UserController {
   constructor(private readonly userService: UserService) {}
 
+  @UseInterceptors(ClassSerializerInterceptor)
   @Post(['/register'])
   @HttpCode(HttpStatus.OK)
   async register(
@@ -37,13 +42,25 @@ export default class UserController {
   @UseGuards(AccessTokenGuard)
   @HttpCode(HttpStatus.OK)
   @Get(['/me'])
-  async signUp(
+  async getProfile(
     @Req() req: IRequest,
   ): Promise<IResponseBase<{ user: IUserProfileResponse }>> {
     const id = req.user['id'];
     const response = await this.userService.getUserProfileById(id);
     return {
       data: { user: response },
+      message: successMessages.SUCCESS,
+      errorCode: '',
+    };
+  }
+
+  @UseGuards(AccessTokenGuard)
+  @HttpCode(HttpStatus.OK)
+  @Delete(['/delete/:id'])
+  async deleteUser(@Param('id') id: string): Promise<IResponseBase<null>> {
+    await this.userService.deleteAccountById(id);
+    return {
+      data: null,
       message: successMessages.SUCCESS,
       errorCode: '',
     };

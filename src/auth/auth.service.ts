@@ -23,7 +23,10 @@ export class AuthenticationService {
       const user = req.user;
       if (user) {
         const id = user['id'];
-        return this.userService.removeRefreshTokenByid(id);
+        req.res.setHeader('Set-Cookie', [
+          `refresh_token=; HttpOnly; Path=/; Max-Age=0`,
+        ]);
+        return this.userService.removeRefreshTokenById(id);
       }
       throw new HttpException(
         errorMessages.TOKEN_NOT_FOUND,
@@ -47,7 +50,7 @@ export class AuthenticationService {
       const account = req.user;
       if (account && account.userProfileId) {
         const tokens = await this.getTokens(account.id, account.email);
-        await this.userService.updateRefreshTokenByid(
+        await this.userService.updateRefreshTokenById(
           account.id,
           tokens.refreshToken,
         );
@@ -163,24 +166,15 @@ export class AuthenticationService {
     try {
       const id = req.user['id'];
       const refreshToken = req.user['refreshToken'];
-      const user = await this.userService.getUserProfileById(id);
-      console.log(
-        '🚀 ~ file: auth.service.ts:167 ~ AuthenticationService ~ user:',
-        user,
-      );
+      const user = await this.userService.getAccountById(id);
       if (!user || !user.refreshToken)
         throw new HttpException(
           errorMessages.ACCESS_DENIED,
           HttpStatus.FORBIDDEN,
         );
-      console.log('RUN');
       const refreshTokenMatches = await bcrypt.compare(
         refreshToken,
         user.refreshToken,
-      );
-      console.log(
-        '🚀 ~ file: auth.service.ts:176 ~ AuthenticationService ~ refreshTokenMatches:',
-        refreshTokenMatches,
       );
       if (!refreshTokenMatches)
         throw new HttpException(
@@ -188,7 +182,7 @@ export class AuthenticationService {
           HttpStatus.FORBIDDEN,
         );
       const tokens = await this.getTokens(user.id, user.email);
-      await this.userService.updateRefreshTokenByid(
+      await this.userService.updateRefreshTokenById(
         user.id,
         tokens.refreshToken,
       );

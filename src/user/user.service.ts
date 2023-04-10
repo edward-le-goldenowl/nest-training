@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, FindOneOptions } from 'typeorm';
+import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 
 import { errorMessages } from '@constants/messages';
@@ -25,6 +25,41 @@ export default class UserService {
     private userProfileRepository: Repository<UserProfileEntity>,
   ) {}
 
+  public async deleteAccountById(id: string) {
+    try {
+      const account = await this.accountRepository
+        .createQueryBuilder('account')
+        .where('account.id = :id', { id })
+        .getOne();
+      if (!account)
+        throw new HttpException(
+          errorMessages.NOT_FOUND_USER,
+          HttpStatus.NOT_FOUND,
+        );
+      await this.accountRepository
+        .createQueryBuilder('account')
+        .softDelete()
+        .where('id = :id', { id })
+        .execute();
+
+      await this.userProfileRepository
+        .createQueryBuilder('userProfile')
+        .softDelete()
+        .where('id = :id', { id: account.userProfileId })
+        .execute();
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      } else {
+        console.error(error);
+        throw new HttpException(
+          errorMessages.SOME_THING_WENT_WRONG,
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
+    }
+  }
+
   public async getUserProfileById(id: string): Promise<IUserProfileResponse> {
     try {
       const response = await this.accountRepository
@@ -33,7 +68,7 @@ export default class UserService {
         .select([
           'account.id AS id',
           'account.email AS email',
-          'account.refreshToken AS "refreshToken"',
+          'account.role AS role',
           'userProfile.fullName AS "fullName"',
           'userProfile.dob AS dob',
           'userProfile.createdAt AS "createdAt"',
@@ -62,18 +97,38 @@ export default class UserService {
   public async getAccountByEmail(
     email: string,
   ): Promise<IAccountQueryResponse | null> {
-    const findOptions: FindOneOptions<IAccountQueryResponse> = {
-      where: {
-        email: email,
-      },
-    };
-    const user = await this.accountRepository.findOne(findOptions);
-    return user;
+    const response = await this.accountRepository
+      .createQueryBuilder('account')
+      .addSelect(['account.password'])
+      .where('account.email = :email', { email })
+      .getOne();
+    return response;
+  }
+
+  public async getAccountById(
+    id: string,
+  ): Promise<IAccountQueryResponse | null> {
+    const response = await this.accountRepository
+      .createQueryBuilder('account')
+      .addSelect(['account.refreshToken'])
+      .where('account.id = :id', { id })
+      .getOne();
+    return response;
+  }
+
+  public async findExistingAccountByEmail(
+    email: string,
+  ): Promise<IAccountQueryResponse | null> {
+    const response = await this.accountRepository
+      .createQueryBuilder('account')
+      .where('account.email = :email', { email })
+      .getOne();
+    return response;
   }
 
   public async create(registerData: IRegisterData): Promise<IRegisterResponse> {
     try {
-      const user = await this.getAccountByEmail(registerData.email);
+      const user = await this.findExistingAccountByEmail(registerData.email);
       if (user) {
         throw new HttpException(
           errorMessages.EMAIL_ALREADY_EXISTS,
@@ -84,6 +139,7 @@ export default class UserService {
       const accountData: IAccountData = {
         email: registerData.email,
         password: hashedPassword,
+        role: registerData.role,
       };
       const userProfileData: IUserProfileData = {
         fullName: registerData.fullName,
@@ -98,9 +154,7 @@ export default class UserService {
         userProfileId: savedUserProfile.id,
       });
       const savedAccount = await this.accountRepository.save(newUserAccount);
-      return {
-        id: savedAccount.id,
-      };
+      return savedAccount;
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;
@@ -114,7 +168,7 @@ export default class UserService {
     }
   }
 
-  public async updateRefreshTokenByid(
+  public async updateRefreshTokenById(
     id: string,
     refreshToken: string,
   ): Promise<string> {
@@ -123,8 +177,8 @@ export default class UserService {
     return refreshToken;
   }
 
-  public async removeRefreshTokenByid(id: string): Promise<string> {
-    await this.accountRepository.update(id, { refreshToken: '' });
+  public async removeRefreshTokenById(id: string): Promise<string> {
+    await this.accountRepository.update(id, { refreshToken: null });
     return id;
   }
 }
