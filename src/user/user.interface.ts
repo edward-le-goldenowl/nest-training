@@ -7,6 +7,7 @@ export interface IAccountData {
 export interface IAccountQueryResponse {
   id: string;
   email: string;
+  role: string;
   userProfileId: string;
   password?: string;
   refreshToken: string | null;

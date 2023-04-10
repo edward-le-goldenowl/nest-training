@@ -35,7 +35,7 @@ export class AuthenticationController {
     const response = await this.authService.login(req);
     return {
       data: response,
-      message: successMessages.LOGIN_SUCCESSFULLY,
+      message: successMessages.SUCCESS,
       errorCode: '',
     };
   }
@@ -47,7 +47,7 @@ export class AuthenticationController {
     await this.authService.logout(req);
     return {
       data: null,
-      message: successMessages.LOGOUT_SUCCESSFULLY,
+      message: successMessages.SUCCESS,
       errorCode: '',
     };
   }

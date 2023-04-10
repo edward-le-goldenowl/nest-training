@@ -9,9 +9,6 @@ enum errorMessages {
 }
 
 enum successMessages {
-  REGISTER_SUCCESSFULLY = 'Register successfully',
-  LOGIN_SUCCESSFULLY = 'Login successfully',
-  LOGOUT_SUCCESSFULLY = 'Logout successfully',
   SUCCESS = 'SUCCESS',
 }
 

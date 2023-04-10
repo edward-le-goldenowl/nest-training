@@ -2,6 +2,7 @@ import {
   Body,
   Req,
   Controller,
+  SetMetadata,
   Post,
   Get,
   Delete,
@@ -15,7 +16,7 @@ import {
 
 import { IResponseBase, IRequest } from '@interfaces/index';
 import { successMessages } from '@constants/messages';
-import { AccessTokenGuard } from '@common/guards';
+import { AccessTokenGuard, RolesGuard } from '@common/guards';
 
 import { RegisterDTO } from './dto/user.dto';
 import { IRegisterResponse, IUserProfileResponse } from './user.interface';
@@ -34,13 +35,12 @@ export default class UserController {
     const response = await this.userService.create(payload);
     return {
       data: { user: response },
-      message: successMessages.REGISTER_SUCCESSFULLY,
+      message: successMessages.SUCCESS,
       errorCode: '',
     };
   }
 
   @UseGuards(AccessTokenGuard)
-  @HttpCode(HttpStatus.OK)
   @Get(['/me'])
   async getProfile(
     @Req() req: IRequest,
@@ -54,9 +54,10 @@ export default class UserController {
     };
   }
 
-  @UseGuards(AccessTokenGuard)
+  @UseGuards(AccessTokenGuard, RolesGuard)
   @HttpCode(HttpStatus.OK)
   @Delete(['/delete/:id'])
+  @SetMetadata('roles', ['admin'])
   async deleteUser(@Param('id') id: string): Promise<IResponseBase<null>> {
     await this.userService.deleteAccountById(id);
     return {
