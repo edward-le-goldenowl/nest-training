@@ -2,7 +2,6 @@ import { VersioningType, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import * as cookieParser from 'cookie-parser';
 
-import TransformResponseInterceptor from '@utils/response.interceptor';
 import { BadRequestExceptionFilter } from '@utils/badRequestExceptionFilter';
 
 import { AppModule } from './app.module';
@@ -13,7 +12,6 @@ async function bootstrap() {
   app.use(cookieParser());
   app.setGlobalPrefix('api');
   app.useGlobalPipes(new ValidationPipe());
-  app.useGlobalInterceptors(new TransformResponseInterceptor());
   app.useGlobalInterceptors(new ExcludeNullInterceptor());
   app.useGlobalFilters(new BadRequestExceptionFilter());
   app.enableVersioning({

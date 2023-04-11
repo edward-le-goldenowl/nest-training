@@ -2,8 +2,9 @@ import {
   Column,
   Entity,
   OneToOne,
-  BeforeUpdate,
   DeleteDateColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -20,19 +21,23 @@ class UserProfile {
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   public dob: Date;
 
-  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  @Column({ nullable: true })
+  avatar: string;
+
+  @Column({ nullable: true })
+  address: string;
+
+  @Column({ nullable: true })
+  phone: string;
+
+  @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;
 
-  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  @UpdateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   updatedAt: Date;
 
   @DeleteDateColumn()
   public deletedAt: Date;
-
-  @BeforeUpdate()
-  updateTimestamps() {
-    this.updatedAt = new Date();
-  }
 
   @OneToOne(() => Account, (account) => account.userProfile)
   account: Account;

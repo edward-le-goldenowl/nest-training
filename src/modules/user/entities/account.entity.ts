@@ -3,8 +3,9 @@ import {
   Entity,
   OneToOne,
   JoinColumn,
-  BeforeUpdate,
   DeleteDateColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Exclude } from 'class-transformer';
@@ -33,19 +34,14 @@ class Account {
   @Column({ nullable: true })
   role: string;
 
-  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;
 
-  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  @UpdateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   updatedAt: Date;
 
   @DeleteDateColumn()
   public deletedAt: Date;
-
-  @BeforeUpdate()
-  updateTimestamps() {
-    this.updatedAt = new Date();
-  }
 
   @OneToOne(() => UserProfile, (userProfile) => userProfile.account)
   @JoinColumn()

@@ -43,3 +43,11 @@ export interface IUserProfileResponse {
   createdAt: Date;
   updatedAt: Date;
 }
+
+export interface IUpdateUserProfileData {
+  fullName?: string;
+  dob?: Date;
+  address?: string;
+  phone?: string;
+  avatar?: string;
+}

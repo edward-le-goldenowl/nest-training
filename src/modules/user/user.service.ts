@@ -1,5 +1,6 @@
 import {
   ConflictException,
+  ForbiddenException,
   HttpException,
   HttpStatus,
   Injectable,
@@ -9,8 +10,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 
+import { IRequest } from '@interfaces/index';
 import { errorCodes } from '@constants/errorCodes';
 import { errorMessages } from '@constants/messages';
+import { CloudinaryService } from '@cloudinary/cloudinary.service';
 
 import AccountEntity from './entities/account.entity';
 import UserProfileEntity from './entities/userProfile.entity';
@@ -21,6 +24,7 @@ import {
   IRegisterResponse,
   IAccountQueryResponse,
   IUserProfileResponse,
+  IUpdateUserProfileData,
 } from './user.interface';
 
 @Injectable()
@@ -30,7 +34,53 @@ export default class UserService {
     private accountRepository: Repository<AccountEntity>,
     @InjectRepository(UserProfileEntity)
     private userProfileRepository: Repository<UserProfileEntity>,
+    private cloudinary: CloudinaryService,
   ) {}
+
+  public async updateUserProfile(
+    req: IRequest,
+    file: Express.Multer.File,
+    payload: IUpdateUserProfileData,
+  ) {
+    try {
+      const user = req.user;
+      const id = user['id'];
+      const account = await this.getAccountById(id);
+      if (!account)
+        throw new ForbiddenException(errorMessages.ACCESS_DENIED, {
+          cause: new Error(),
+          description: errorCodes.ERR_UPLOAD_FILE_FAILED,
+        });
+
+      const dataUpdate: IUpdateUserProfileData = {
+        fullName: payload.fullName,
+        dob: payload.dob,
+        address: payload.address,
+      };
+      if (file) {
+        const uploadResponse = await this.cloudinary.uploadImage(file);
+        dataUpdate['avatar'] = uploadResponse.secure_url;
+      }
+      const updatedResponse = await this.userProfileRepository
+        .createQueryBuilder('userProfile')
+        .update()
+        .set(dataUpdate)
+        .where('id = :id', { id: account.userProfileId })
+        .returning('*')
+        .execute();
+      return updatedResponse.raw;
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      } else {
+        console.error(error);
+        throw new HttpException(
+          errorMessages.SOME_THING_WENT_WRONG,
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
+    }
+  }
 
   public async deleteAccountById(id: string) {
     try {

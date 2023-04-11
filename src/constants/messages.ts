@@ -6,6 +6,7 @@ enum errorMessages {
   NOT_FOUND_USER = 'Cannot find this user',
   TOKEN_NOT_FOUND = 'Token not found',
   ACCESS_DENIED = 'Access Denied',
+  UPLOAD_FILE_FAILED = 'Failed to upload file',
 }
 
 enum successMessages {

@@ -6,6 +6,7 @@ enum errorCodes {
   ERR_REFRESH_TOKEN = 'ErrRefreshTokenNotMatched',
   ERR_NOT_FOUND_USER = 'ErrUserNotFound',
   ERR_EMAIL_ALREADY_EXIST = 'ErrEmailAlreadyExist',
+  ERR_UPLOAD_FILE_FAILED = 'ErrUploadFileFailed',
 }
 
 export { errorCodes };

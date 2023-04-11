@@ -8,6 +8,7 @@ import {
   IsDateString,
   IsIn,
   IsOptional,
+  IsPhoneNumber,
 } from 'class-validator';
 import { Match } from './match.decorator';
 
@@ -44,11 +45,18 @@ export class RegisterDTO {
 
 export class UpdateProfileDTO {
   @IsOptional()
-  @IsNotEmpty()
   @IsString()
   fullName: string;
 
   @IsOptional()
   @IsDateString()
-  dob: string;
+  dob: Date;
+
+  @IsOptional()
+  @IsString()
+  address: string;
+
+  @IsOptional()
+  @IsPhoneNumber('VN')
+  phone: string;
 }

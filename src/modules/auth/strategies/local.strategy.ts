@@ -2,7 +2,7 @@ import { Strategy } from 'passport-local';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable } from '@nestjs/common';
 
-import { IAccountQueryResponse } from '@user/user.interface';
+import { IAccountQueryResponse } from 'src/modules/user/user.interface';
 
 import { AuthenticationService } from '../auth.service';
 
