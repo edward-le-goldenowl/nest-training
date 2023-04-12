@@ -2,6 +2,7 @@ import {
   Column,
   Entity,
   OneToOne,
+  OneToMany,
   JoinColumn,
   DeleteDateColumn,
   CreateDateColumn,
@@ -9,6 +10,8 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Exclude } from 'class-transformer';
+
+import Posts from '@posts/entities/posts.entity';
 
 import UserProfile from './userProfile.entity';
 
@@ -29,16 +32,16 @@ class Account {
 
   @Exclude({ toPlainOnly: true })
   @Column({ type: 'text', unique: true, nullable: true, select: false })
-  refreshToken!: string | null;
+  public refreshToken!: string | null;
 
   @Column({ nullable: true })
-  role: string;
+  public role: string;
 
   @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-  createdAt: Date;
+  public createdAt: Date;
 
   @UpdateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-  updatedAt: Date;
+  public updatedAt: Date;
 
   @DeleteDateColumn()
   public deletedAt: Date;
@@ -46,6 +49,9 @@ class Account {
   @OneToOne(() => UserProfile, (userProfile) => userProfile.account)
   @JoinColumn()
   userProfile: UserProfile;
+
+  @OneToMany(() => Posts, (posts) => posts.author)
+  posts: Posts[];
 }
 
 export default Account;

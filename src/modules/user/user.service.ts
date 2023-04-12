@@ -11,20 +11,20 @@ import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 
 import { IRequest } from '@interfaces/index';
-import { errorCodes } from '@constants/errorCodes';
-import { errorMessages } from '@constants/messages';
+import { errorCodes, errorMessages } from '@constants/index';
+import PostsEntity from '@posts/entities/posts.entity';
 import { CloudinaryService } from '@cloudinary/cloudinary.service';
 
 import AccountEntity from './entities/account.entity';
 import UserProfileEntity from './entities/userProfile.entity';
 import {
-  IRegisterData,
-  IAccountData,
-  IUserProfileData,
+  IRegisterPayload,
+  IAccountPayload,
+  IUserProfilePayload,
   IRegisterResponse,
   IAccountQueryResponse,
   IUserProfileResponse,
-  IUpdateUserProfileData,
+  IUpdateUserProfilePayload,
 } from './user.interface';
 
 @Injectable()
@@ -34,13 +34,15 @@ export default class UserService {
     private accountRepository: Repository<AccountEntity>,
     @InjectRepository(UserProfileEntity)
     private userProfileRepository: Repository<UserProfileEntity>,
+    @InjectRepository(PostsEntity)
+    private postsRepository: Repository<PostsEntity>,
     private cloudinary: CloudinaryService,
   ) {}
 
   public async updateUserProfile(
     req: IRequest,
     file: Express.Multer.File,
-    payload: IUpdateUserProfileData,
+    payload: IUpdateUserProfilePayload,
   ) {
     try {
       const user = req.user;
@@ -52,13 +54,15 @@ export default class UserService {
           description: errorCodes.ERR_UPLOAD_FILE_FAILED,
         });
 
-      const dataUpdate: IUpdateUserProfileData = {
+      const dataUpdate: IUpdateUserProfilePayload = {
         fullName: payload.fullName,
         dob: payload.dob,
         address: payload.address,
+        phone: payload.phone,
       };
       if (file) {
-        const uploadResponse = await this.cloudinary.uploadImage(file);
+        const folder = 'user_profile';
+        const uploadResponse = await this.cloudinary.uploadImage(file, folder);
         dataUpdate['avatar'] = uploadResponse.secure_url;
       }
       const updatedResponse = await this.userProfileRepository
@@ -91,8 +95,15 @@ export default class UserService {
       if (!account)
         throw new NotFoundException(errorMessages.NOT_FOUND_USER, {
           cause: new Error(),
-          description: errorCodes.ERR_NOT_FOUND_USER,
+          description: errorCodes.ERR_USER_NOT_FOUND,
         });
+
+      await this.postsRepository
+        .createQueryBuilder('posts')
+        .softDelete()
+        .where('authorId = :id', { id: account.id })
+        .execute();
+
       await this.accountRepository
         .createQueryBuilder('account')
         .softDelete()
@@ -128,6 +139,9 @@ export default class UserService {
           'account.role AS role',
           'userProfile.fullName AS "fullName"',
           'userProfile.dob AS dob',
+          'userProfile.avatar AS avatar',
+          'userProfile.phone AS phone',
+          'userProfile.address AS address',
           'userProfile.createdAt AS "createdAt"',
           'userProfile.updatedAt AS "updatedAt"',
         ])
@@ -136,7 +150,7 @@ export default class UserService {
       if (response) return response;
       throw new NotFoundException(errorMessages.NOT_FOUND_USER, {
         cause: new Error(),
-        description: errorCodes.ERR_NOT_FOUND_USER,
+        description: errorCodes.ERR_USER_NOT_FOUND,
       });
     } catch (error) {
       if (error instanceof HttpException) {
@@ -179,11 +193,14 @@ export default class UserService {
     const response = await this.accountRepository
       .createQueryBuilder('account')
       .where('account.email = :email', { email })
+      .withDeleted()
       .getOne();
     return response;
   }
 
-  public async create(registerData: IRegisterData): Promise<IRegisterResponse> {
+  public async create(
+    registerData: IRegisterPayload,
+  ): Promise<IRegisterResponse> {
     try {
       const user = await this.findExistingAccountByEmail(registerData.email);
       if (user) {
@@ -193,21 +210,22 @@ export default class UserService {
         });
       }
       const hashedPassword = await bcrypt.hash(registerData.password, 10);
-      const accountData: IAccountData = {
+      const accountPayload: IAccountPayload = {
         email: registerData.email,
         password: hashedPassword,
         role: registerData.role,
       };
-      const userProfileData: IUserProfileData = {
+      const userProfilePayload: IUserProfilePayload = {
         fullName: registerData.fullName,
         dob: registerData.dob,
       };
-      const newUserProfile = this.userProfileRepository.create(userProfileData);
+      const newUserProfile =
+        this.userProfileRepository.create(userProfilePayload);
       const savedUserProfile = await this.userProfileRepository.save(
         newUserProfile,
       );
       const newUserAccount = this.accountRepository.create({
-        ...accountData,
+        ...accountPayload,
         userProfileId: savedUserProfile.id,
       });
       const savedAccount = await this.accountRepository.save(newUserAccount);

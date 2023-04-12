@@ -1,4 +1,4 @@
-export interface IAccountData {
+export interface IAccountPayload {
   email: string;
   password: string;
   role: string;
@@ -13,12 +13,12 @@ export interface IAccountQueryResponse {
   refreshToken: string | null;
 }
 
-export interface IUserProfileData {
+export interface IUserProfilePayload {
   fullName: string;
   dob: Date | string;
 }
 
-export interface IRegisterData {
+export interface IRegisterPayload {
   email: string;
   password: string;
   dob: Date | string;
@@ -40,11 +40,14 @@ export interface IUserProfileResponse {
   fullname: string;
   dob: Date;
   role: string;
+  avatar: string;
+  phone: string;
+  address: string;
   createdAt: Date;
   updatedAt: Date;
 }
 
-export interface IUpdateUserProfileData {
+export interface IUpdateUserProfilePayload {
   fullName?: string;
   dob?: Date;
   address?: string;

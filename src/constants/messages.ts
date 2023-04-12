@@ -7,6 +7,10 @@ enum errorMessages {
   TOKEN_NOT_FOUND = 'Token not found',
   ACCESS_DENIED = 'Access Denied',
   UPLOAD_FILE_FAILED = 'Failed to upload file',
+  CREATE_NEW_POST_FAILED = 'Cannot create this post',
+  NOT_FOUND_POST = 'Cannot find this post',
+  UPDATE_POST_FAILED = 'Cannot update this post',
+  DELETE_POST_FAILED = 'Cannot update this post',
 }
 
 enum successMessages {

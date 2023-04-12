@@ -17,10 +17,10 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 
-import { IResponseBase, IRequest } from '@interfaces/index';
-import { successMessages } from '@constants/messages';
-import { AccessTokenGuard, RolesGuard } from '@common/guards';
+import { successMessages, roles } from '@constants/index';
 import { Roles } from '@common/guards/roles.decorator';
+import { IResponseBase, IRequest } from '@interfaces/index';
+import { AccessTokenGuard, RolesGuard } from '@common/guards';
 
 import { RegisterDTO, UpdateProfileDTO } from './dto/user.dto';
 import { IRegisterResponse, IUserProfileResponse } from './user.interface';
@@ -61,7 +61,7 @@ export default class UserController {
   @UseGuards(AccessTokenGuard, RolesGuard)
   @HttpCode(HttpStatus.OK)
   @Delete(['/delete/:id'])
-  @Roles('admin')
+  @Roles(roles.ADMIN)
   async deleteUser(@Param('id') id: string): Promise<IResponseBase<null>> {
     await this.userService.deleteAccountById(id);
     return {
@@ -75,7 +75,7 @@ export default class UserController {
   @HttpCode(HttpStatus.OK)
   @Patch('/updateProfile')
   @UseInterceptors(FileInterceptor('avatar'))
-  async uploadFile(
+  async updateProfile(
     @Req() req: IRequest,
     @UploadedFile(
       new ParseFilePipeBuilder()
@@ -92,14 +92,14 @@ export default class UserController {
     )
     avatar: Express.Multer.File,
     @Body() payload: UpdateProfileDTO,
-  ) {
+  ): Promise<IResponseBase<{ user: IUserProfileResponse }>> {
     const response = await this.userService.updateUserProfile(
       req,
       avatar,
       payload,
     );
     return {
-      data: response,
+      data: { user: response },
       message: successMessages.SUCCESS,
       error: '',
     };

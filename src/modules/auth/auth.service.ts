@@ -10,11 +10,10 @@ import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 
-import UserService from 'src/modules/user/user.service';
-import { errorMessages } from '@constants/messages';
-import { errorCodes } from '@constants/errorCodes';
+import UserService from '@user/user.service';
 import { IRequest } from '@interfaces/index';
-import { IAccountQueryResponse } from 'src/modules/user/user.interface';
+import { IAccountQueryResponse } from '@user/user.interface';
+import { errorMessages, errorCodes } from '@constants/index';
 
 import { ICurrentUserResponse } from './auth.interface';
 

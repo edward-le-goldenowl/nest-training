@@ -17,9 +17,6 @@
       "@constants/*": [
         "src/constants/*"
       ],
-      "@user/*": [
-        "src/modules/user/*"
-      ],
       "@helpers/*": [
         "src/helpers/*"
       ],
@@ -32,14 +29,20 @@
       "@database/*": [
         "src/database/*"
       ],
-      "@auth/*": [
-        "src/modules/auth/*"
-      ],
       "@common/*": [
         "src/common/*"
       ],
       "@cloudinary/*": [
         "src/cloudinary/*"
+      ],
+      "@user/*": [
+        "src/modules/user/*"
+      ],
+      "@auth/*": [
+        "src/modules/auth/*"
+      ],
+      "@posts/*": [
+        "src/modules/posts/*"
       ],
     },
     "incremental": true,

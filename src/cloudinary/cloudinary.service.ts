@@ -3,8 +3,7 @@ import { UploadApiErrorResponse, UploadApiResponse, v2 } from 'cloudinary';
 import { ConfigService } from '@nestjs/config';
 import toStream = require('buffer-to-stream');
 
-import { errorMessages } from '@constants/messages';
-import { errorCodes } from '@constants/errorCodes';
+import { errorMessages, errorCodes } from '@constants/index';
 
 @Injectable()
 export class CloudinaryService {
@@ -17,17 +16,23 @@ export class CloudinaryService {
   }
   async uploadImage(
     file: Express.Multer.File,
+    folder: string,
   ): Promise<UploadApiResponse | UploadApiErrorResponse> {
     return new Promise((resolve, reject) => {
-      const upload = v2.uploader.upload_stream((error, result) => {
-        if (error) return reject(error);
-        if (!result)
-          throw new BadRequestException(errorMessages.UPLOAD_FILE_FAILED, {
-            cause: new Error(),
-            description: errorCodes.ERR_UPLOAD_FILE_FAILED,
-          });
-        resolve(result);
-      });
+      const timestamp = new Date().toISOString();
+      const newName = `${timestamp}-${file.originalname}`;
+      const upload = v2.uploader.upload_stream(
+        { public_id: `${folder}/${newName}` },
+        (error, result) => {
+          if (error) return reject(error);
+          if (!result)
+            throw new BadRequestException(errorMessages.UPLOAD_FILE_FAILED, {
+              cause: new Error(),
+              description: errorCodes.ERR_UPLOAD_FILE_FAILED,
+            });
+          resolve(result);
+        },
+      );
       toStream(file.buffer).pipe(upload);
     });
   }

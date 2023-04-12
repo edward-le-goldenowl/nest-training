@@ -1,34 +1,31 @@
 import {
   Column,
   Entity,
-  OneToOne,
+  ManyToOne,
   DeleteDateColumn,
   CreateDateColumn,
   UpdateDateColumn,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
-import Account from './account.entity';
+import User from '@user/entities/account.entity';
 
 @Entity()
-class UserProfile {
+class Posts {
   @PrimaryGeneratedColumn('uuid')
   public id: string;
 
   @Column()
-  public fullName: string;
+  public title: string;
 
-  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-  public dob: Date;
+  @Column()
+  public content: string;
 
-  @Column({ nullable: true })
-  public avatar: string;
-
-  @Column({ nullable: true })
-  public address: string;
+  @Column()
+  public authorId: string;
 
   @Column({ nullable: true })
-  public phone: string;
+  public previewImage: string;
 
   @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   public createdAt: Date;
@@ -39,8 +36,8 @@ class UserProfile {
   @DeleteDateColumn()
   public deletedAt: Date;
 
-  @OneToOne(() => Account, (account) => account.userProfile)
-  account: Account;
+  @ManyToOne(() => User, (user) => user.posts)
+  author: User;
 }
 
-export default UserProfile;
+export default Posts;
