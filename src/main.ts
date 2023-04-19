@@ -3,7 +3,7 @@ import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import * as cookieParser from 'cookie-parser';
 
-import { BadRequestExceptionFilter } from '@utils/badRequestExceptionFilter';
+import { BadRequestExceptionFilter } from '@utils/requestExceptionFilter';
 
 import { AppModule } from './app.module';
 import { ExcludeNullInterceptor } from '@utils/excludeNull.interceptor';

@@ -15,7 +15,7 @@ interface IExceptionResponse {
 }
 
 @Catch(BadRequestException)
-class BadRequestExceptionFilter implements ExceptionFilter {
+export class BadRequestExceptionFilter implements ExceptionFilter {
   catch(exception: BadRequestException, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
@@ -30,5 +30,3 @@ class BadRequestExceptionFilter implements ExceptionFilter {
     });
   }
 }
-
-export { BadRequestExceptionFilter };
