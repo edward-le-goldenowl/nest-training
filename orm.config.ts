@@ -15,7 +15,9 @@ const AppDataSource = new DataSource({
   logging: true,
   synchronize: false,
   migrationsRun: false,
+  ssl: true,
   migrations: ['dist/**/migrations/*.js'],
+  migrationsTableName: 'migration_history',
 });
 
 export default AppDataSource;

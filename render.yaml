@@ -1,0 +1,46 @@
+previewsEnabled: true
+previewsExpireAfterDays: 1
+
+services:
+  - type: web
+    name: demo_nestjs
+    env: docker
+    region: singapore
+    plan: starter
+    branch: master
+    dockerfilePath: ./Dockerfile
+    dockerContext: ./
+    # domains:
+    #   - api.coolapp.dev
+    # envVars:
+    #   - key: PORT
+    #     value: 4000
+    #   - key: EXAMPLE_GENERATE_SECRET
+    #     generateValue: true
+    #   - key: EXAMPLE_NO_SYNC
+    #     sync: false
+
+    #   - key: DB_HOST
+    #     fromDatabase:
+    #       name: db_demo_nestjs
+    #       property: host
+    #   - key: DB_PORT
+    #     fromDatabase:
+    #       name: db_demo_nestjs
+    #       property: port
+    #   - key: DB_USERNAME
+    #     fromDatabase:
+    #       name: db_demo_nestjs
+    #       property: user
+    #   - key: DB_PASSWORD
+    #     fromDatabase:
+    #       name: db_demo_nestjs
+    #       property: password
+    #   - key: DB_DATABASE_NAME
+    #     fromDatabase:
+    #       name: db_demo_nestjs
+    #       property: database
+# databases:
+#   - name: db_demo_nestjs
+#     databaseName: db_demo_nestjs
+#     user: db_demo_nestjs
