@@ -15,6 +15,7 @@ import {
   Patch,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 
 import { successMessages } from '@constants/index';
 import { IResponseBase, IRequest } from '@interfaces/index';
@@ -24,7 +25,8 @@ import { AddNewPostDTO, UpdatePostDTO } from './dto/posts.dto';
 import { IGetPostResponse } from './posts.interface';
 import PostsService from './posts.service';
 
-@Controller({ path: 'post', version: ['1'] })
+@ApiTags('Posts')
+@Controller({ path: 'posts', version: ['1'] })
 export default class PostsController {
   constructor(private readonly postsService: PostsService) {}
 
@@ -32,6 +34,7 @@ export default class PostsController {
   @HttpCode(HttpStatus.OK)
   @Post(['/new'])
   @UseInterceptors(FileInterceptor('previewImage'))
+  @ApiOkResponse({ description: 'Add new post' })
   async addNewPost(
     @Req() req: IRequest,
     @Body() payload: AddNewPostDTO,
@@ -61,6 +64,7 @@ export default class PostsController {
   @UseGuards(AccessTokenGuard)
   @HttpCode(HttpStatus.OK)
   @Get(['/:id'])
+  @ApiOkResponse({ description: 'Get post by id' })
   async getPostById(
     @Param('id') id: string,
   ): Promise<IResponseBase<{ post: IGetPostResponse }>> {
@@ -76,6 +80,7 @@ export default class PostsController {
   @HttpCode(HttpStatus.OK)
   @Patch(['/:id'])
   @UseInterceptors(FileInterceptor('previewImage'))
+  @ApiOkResponse({ description: 'Update post by id' })
   async updatePostById(
     @Param('id') id: string,
     @Req() req: IRequest,
@@ -111,6 +116,7 @@ export default class PostsController {
   @UseGuards(AccessTokenGuard)
   @HttpCode(HttpStatus.OK)
   @Delete(['/:id'])
+  @ApiOkResponse({ description: 'Delete post by id' })
   async deletePostById(
     @Req() req: IRequest,
     @Param('id') id: string,

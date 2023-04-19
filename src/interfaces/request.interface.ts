@@ -1,6 +1,6 @@
-export interface IRequest extends Request {
+export interface IRequest extends Partial<Request> {
   res: any;
-  user: {
+  user?: {
     id: string;
     refreshToken: string;
     accessToken: string;

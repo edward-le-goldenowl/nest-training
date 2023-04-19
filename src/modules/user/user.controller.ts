@@ -16,6 +16,7 @@ import {
   Patch,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 
 import { successMessages, roles } from '@constants/index';
 import { Roles } from '@common/guards/roles.decorator';
@@ -26,6 +27,7 @@ import { RegisterDTO, UpdateProfileDTO } from './dto/user.dto';
 import { IRegisterResponse, IUserProfileResponse } from './user.interface';
 import UserService from './user.service';
 
+@ApiTags('User')
 @Controller({ path: 'user', version: ['1'] })
 export default class UserController {
   constructor(private readonly userService: UserService) {}
@@ -33,6 +35,7 @@ export default class UserController {
   @UseInterceptors(ClassSerializerInterceptor)
   @Post(['/register'])
   @HttpCode(HttpStatus.OK)
+  @ApiOkResponse({ description: 'Register new user' })
   async register(
     @Body() payload: RegisterDTO,
   ): Promise<IResponseBase<{ user: IRegisterResponse }>> {
@@ -46,10 +49,11 @@ export default class UserController {
 
   @UseGuards(AccessTokenGuard)
   @Get(['/me'])
+  @ApiOkResponse({ description: 'Get current user profile' })
   async getProfile(
     @Req() req: IRequest,
   ): Promise<IResponseBase<{ user: IUserProfileResponse }>> {
-    const id = req.user['id'];
+    const id = req.user?.['id'] || '';
     const response = await this.userService.getUserProfileById(id);
     return {
       data: { user: response },
@@ -62,6 +66,7 @@ export default class UserController {
   @HttpCode(HttpStatus.OK)
   @Delete(['/delete/:id'])
   @Roles(roles.ADMIN)
+  @ApiOkResponse({ description: 'Delete user by id' })
   async deleteUser(@Param('id') id: string): Promise<IResponseBase<null>> {
     await this.userService.deleteAccountById(id);
     return {
@@ -75,6 +80,7 @@ export default class UserController {
   @HttpCode(HttpStatus.OK)
   @Patch('/updateProfile')
   @UseInterceptors(FileInterceptor('avatar'))
+  @ApiOkResponse({ description: 'Update user profile' })
   async updateProfile(
     @Req() req: IRequest,
     @UploadedFile(

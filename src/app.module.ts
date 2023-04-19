@@ -10,7 +10,6 @@ import { PostsModule } from '@posts/posts.module';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { TestModule } from './test/test.module';
 
 @Module({
   imports: [
@@ -36,7 +35,6 @@ import { TestModule } from './test/test.module';
     DatabaseModule,
     UserModule,
     AuthenticationModule,
-    TestModule,
     CloudinaryModule,
     PostsModule,
   ],

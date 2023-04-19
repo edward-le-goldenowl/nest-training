@@ -1,7 +1,7 @@
 import {
   ForbiddenException,
   HttpException,
-  HttpStatus,
+  InternalServerErrorException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -37,33 +37,41 @@ export default class PostsService {
   ): Promise<IGetPostResponse> {
     try {
       const user = req.user;
-      const id = user['id'];
-      if (!id)
-        throw new ForbiddenException(errorMessages.CREATE_NEW_POST_FAILED, {
-          cause: new Error(),
-          description: errorCodes.ERR_CREATE_NEW_POST,
-        });
-      const newPostPayload: INewPostPayload = {
-        ...payload,
-        authorId: id,
-      };
+      if (user) {
+        const id = user['id'];
+        if (!id)
+          throw new ForbiddenException(errorMessages.CREATE_NEW_POST_FAILED, {
+            cause: new Error(),
+            description: errorCodes.ERR_CREATE_NEW_POST,
+          });
+        const newPostPayload: INewPostPayload = {
+          ...payload,
+          authorId: id,
+        };
 
-      if (file) {
-        const folder = 'posts_preview';
-        const uploadResponse = await this.cloudinary.uploadImage(file, folder);
-        newPostPayload['previewImage'] = uploadResponse.secure_url;
+        if (file) {
+          const folder = 'posts_preview';
+          const uploadResponse = await this.cloudinary.uploadImage(
+            file,
+            folder,
+          );
+          newPostPayload['previewImage'] = uploadResponse.secure_url;
+        }
+        const newPost = this.postsRepository.create(newPostPayload);
+        const savedPost = await this.postsRepository.save(newPost);
+        return savedPost;
       }
-      const newPost = this.postsRepository.create(newPostPayload);
-      const savedPost = await this.postsRepository.save(newPost);
-      return savedPost;
+      throw new ForbiddenException(errorMessages.CREATE_NEW_POST_FAILED, {
+        cause: new Error(),
+        description: errorCodes.ERR_CREATE_NEW_POST,
+      });
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;
       } else {
         console.error(error);
-        throw new HttpException(
+        throw new InternalServerErrorException(
           errorMessages.SOME_THING_WENT_WRONG,
-          HttpStatus.INTERNAL_SERVER_ERROR,
         );
       }
     }
@@ -72,34 +80,39 @@ export default class PostsService {
   public async deletePostById(req: IRequest, id: string) {
     try {
       const user = req.user;
-      const userId = user['id'];
-      const account = await this.userService.getAccountById(userId);
-      const currentPost = await this.getPostById(id);
-      if (
-        !account ||
-        !currentPost ||
-        (currentPost &&
-          currentPost.authorId !== userId &&
-          account.role === roles.MEMBER)
-      ) {
-        throw new ForbiddenException(errorMessages.DELETE_POST_FAILED, {
-          cause: new Error(),
-          description: errorCodes.ERR_DELETE_POST_FAILED,
-        });
+      if (user) {
+        const userId = user['id'];
+        const account = await this.userService.getAccountById(userId);
+        const currentPost = await this.getPostById(id);
+        if (
+          !account ||
+          !currentPost ||
+          (currentPost &&
+            currentPost.authorId !== userId &&
+            account.role === roles.MEMBER)
+        ) {
+          throw new ForbiddenException(errorMessages.DELETE_POST_FAILED, {
+            cause: new Error(),
+            description: errorCodes.ERR_DELETE_POST_FAILED,
+          });
+        }
+        await this.postsRepository
+          .createQueryBuilder('posts')
+          .softDelete()
+          .where('id = :id', { id })
+          .execute();
       }
-      await this.postsRepository
-        .createQueryBuilder('posts')
-        .softDelete()
-        .where('id = :id', { id })
-        .execute();
+      throw new ForbiddenException(errorMessages.DELETE_POST_FAILED, {
+        cause: new Error(),
+        description: errorCodes.ERR_DELETE_POST_FAILED,
+      });
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;
       } else {
         console.error(error);
-        throw new HttpException(
+        throw new InternalServerErrorException(
           errorMessages.SOME_THING_WENT_WRONG,
-          HttpStatus.INTERNAL_SERVER_ERROR,
         );
       }
     }
@@ -121,9 +134,8 @@ export default class PostsService {
         throw error;
       } else {
         console.error(error);
-        throw new HttpException(
+        throw new InternalServerErrorException(
           errorMessages.SOME_THING_WENT_WRONG,
-          HttpStatus.INTERNAL_SERVER_ERROR,
         );
       }
     }
@@ -137,46 +149,54 @@ export default class PostsService {
   ): Promise<IGetPostResponse> {
     try {
       const user = req.user;
-      const userId = user['id'];
-      const account = await this.userService.getAccountById(userId);
-      const currentPost = await this.getPostById(id);
-      if (
-        !account ||
-        !currentPost ||
-        (currentPost &&
-          currentPost.authorId !== userId &&
-          account.role === roles.MEMBER)
-      ) {
-        throw new ForbiddenException(errorMessages.UPDATE_POST_FAILED, {
-          cause: new Error(),
-          description: errorCodes.ERR_POST_UPDATE_FAILED,
-        });
-      }
-      const dataUpdate: IUpdatePostPayload = {
-        ...payload,
-      };
+      if (user) {
+        const userId = user['id'];
+        const account = await this.userService.getAccountById(userId);
+        const currentPost = await this.getPostById(id);
+        if (
+          !account ||
+          !currentPost ||
+          (currentPost &&
+            currentPost.authorId !== userId &&
+            account.role === roles.MEMBER)
+        ) {
+          throw new ForbiddenException(errorMessages.UPDATE_POST_FAILED, {
+            cause: new Error(),
+            description: errorCodes.ERR_POST_UPDATE_FAILED,
+          });
+        }
+        const dataUpdate: IUpdatePostPayload = {
+          ...payload,
+        };
 
-      if (file) {
-        const folder = 'posts_preview';
-        const uploadResponse = await this.cloudinary.uploadImage(file, folder);
-        dataUpdate['previewImage'] = uploadResponse.secure_url;
+        if (file) {
+          const folder = 'posts_preview';
+          const uploadResponse = await this.cloudinary.uploadImage(
+            file,
+            folder,
+          );
+          dataUpdate['previewImage'] = uploadResponse.secure_url;
+        }
+        const updatedResponse = await this.postsRepository
+          .createQueryBuilder('posts')
+          .update()
+          .set(dataUpdate)
+          .where('id = :id', { id })
+          .returning('*')
+          .execute();
+        return updatedResponse.raw;
       }
-      const updatedResponse = await this.postsRepository
-        .createQueryBuilder('posts')
-        .update()
-        .set(dataUpdate)
-        .where('id = :id', { id })
-        .returning('*')
-        .execute();
-      return updatedResponse.raw;
+      throw new ForbiddenException(errorMessages.UPDATE_POST_FAILED, {
+        cause: new Error(),
+        description: errorCodes.ERR_POST_UPDATE_FAILED,
+      });
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;
       } else {
         console.error(error);
-        throw new HttpException(
+        throw new InternalServerErrorException(
           errorMessages.SOME_THING_WENT_WRONG,
-          HttpStatus.INTERNAL_SERVER_ERROR,
         );
       }
     }

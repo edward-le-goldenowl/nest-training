@@ -17,7 +17,7 @@ export class CloudinaryService {
   async uploadImage(
     file: Express.Multer.File,
     folder: string,
-  ): Promise<UploadApiResponse | UploadApiErrorResponse> {
+  ): Promise<Partial<UploadApiResponse | UploadApiErrorResponse>> {
     return new Promise((resolve, reject) => {
       const timestamp = new Date().toISOString();
       const newName = `${timestamp}-${file.originalname}`;

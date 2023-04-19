@@ -2,7 +2,7 @@ import {
   ConflictException,
   ForbiddenException,
   HttpException,
-  HttpStatus,
+  InternalServerErrorException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -46,41 +46,49 @@ export default class UserService {
   ) {
     try {
       const user = req.user;
-      const id = user['id'];
-      const account = await this.getAccountById(id);
-      if (!account)
-        throw new ForbiddenException(errorMessages.ACCESS_DENIED, {
-          cause: new Error(),
-          description: errorCodes.ERR_UPLOAD_FILE_FAILED,
-        });
+      if (user) {
+        const id = user['id'];
+        const account = await this.getAccountById(id);
+        if (!account)
+          throw new ForbiddenException(errorMessages.ACCESS_DENIED, {
+            cause: new Error(),
+            description: errorCodes.ERR_UPLOAD_FILE_FAILED,
+          });
 
-      const dataUpdate: IUpdateUserProfilePayload = {
-        fullName: payload.fullName,
-        dob: payload.dob,
-        address: payload.address,
-        phone: payload.phone,
-      };
-      if (file) {
-        const folder = 'user_profile';
-        const uploadResponse = await this.cloudinary.uploadImage(file, folder);
-        dataUpdate['avatar'] = uploadResponse.secure_url;
+        const dataUpdate: IUpdateUserProfilePayload = {
+          fullName: payload.fullName,
+          dob: payload.dob,
+          address: payload.address,
+          phone: payload.phone,
+        };
+        if (file) {
+          const folder = 'user_profile';
+          const uploadResponse = await this.cloudinary.uploadImage(
+            file,
+            folder,
+          );
+          dataUpdate['avatar'] = uploadResponse.secure_url;
+        }
+        const updatedResponse = await this.userProfileRepository
+          .createQueryBuilder('userProfile')
+          .update()
+          .set(dataUpdate)
+          .where('id = :id', { id: account.userProfileId })
+          .returning('*')
+          .execute();
+        return updatedResponse.raw;
       }
-      const updatedResponse = await this.userProfileRepository
-        .createQueryBuilder('userProfile')
-        .update()
-        .set(dataUpdate)
-        .where('id = :id', { id: account.userProfileId })
-        .returning('*')
-        .execute();
-      return updatedResponse.raw;
+      throw new ForbiddenException(errorMessages.ACCESS_DENIED, {
+        cause: new Error(),
+        description: errorCodes.ERR_UPLOAD_FILE_FAILED,
+      });
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;
       } else {
         console.error(error);
-        throw new HttpException(
+        throw new InternalServerErrorException(
           errorMessages.SOME_THING_WENT_WRONG,
-          HttpStatus.INTERNAL_SERVER_ERROR,
         );
       }
     }
@@ -120,9 +128,8 @@ export default class UserService {
         throw error;
       } else {
         console.error(error);
-        throw new HttpException(
+        throw new InternalServerErrorException(
           errorMessages.SOME_THING_WENT_WRONG,
-          HttpStatus.INTERNAL_SERVER_ERROR,
         );
       }
     }
@@ -157,9 +164,8 @@ export default class UserService {
         throw error;
       } else {
         console.error(error);
-        throw new HttpException(
+        throw new InternalServerErrorException(
           errorMessages.SOME_THING_WENT_WRONG,
-          HttpStatus.INTERNAL_SERVER_ERROR,
         );
       }
     }
@@ -235,9 +241,8 @@ export default class UserService {
         throw error;
       } else {
         console.error(error);
-        throw new HttpException(
+        throw new InternalServerErrorException(
           errorMessages.SOME_THING_WENT_WRONG,
-          HttpStatus.INTERNAL_SERVER_ERROR,
         );
       }
     }
