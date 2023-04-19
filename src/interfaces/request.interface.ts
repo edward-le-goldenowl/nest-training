@@ -1,4 +1,4 @@
-export interface IRequest extends Partial<Request> {
+interface IRequest extends Partial<Request> {
   res: any;
   user?: {
     id: string;
@@ -9,3 +9,5 @@ export interface IRequest extends Partial<Request> {
     password?: string;
   };
 }
+
+export { IRequest };
