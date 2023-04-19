@@ -1,15 +1,16 @@
 import { Module } from '@nestjs/common';
 import * as Joi from '@hapi/joi';
 import { ConfigModule } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { UserModule } from '@user/user.module';
 import { AuthenticationModule } from '@auth/auth.module';
-import { DatabaseModule } from '@database/database.module';
 import { CloudinaryModule } from '@cloudinary/cloudinary.module';
 import { PostsModule } from '@posts/posts.module';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import AppDataSource from 'orm.config';
 
 @Module({
   imports: [
@@ -32,7 +33,8 @@ import { AppService } from './app.service';
         CLOUDINARY_API_SECRET: Joi.string().required(),
       }),
     }),
-    DatabaseModule,
+
+    TypeOrmModule.forRoot(AppDataSource.options),
     UserModule,
     AuthenticationModule,
     CloudinaryModule,
