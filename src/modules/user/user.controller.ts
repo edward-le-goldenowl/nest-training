@@ -18,9 +18,9 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 
-import { successMessages, roles } from '@constants/index';
+import { successMessages, roles } from '@constants';
 import { Roles } from '@common/guards/roles.decorator';
-import { IResponseBase, IRequest } from '@interfaces/index';
+import { IResponseBase, IRequest } from '@interfaces';
 import { AccessTokenGuard, RolesGuard } from '@common/guards';
 
 import { RegisterDTO, UpdateProfileDTO } from './dto/user.dto';

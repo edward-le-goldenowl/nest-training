@@ -14,14 +14,14 @@
       "@config/*": [
         "src/config/*"
       ],
-      "@constants/*": [
-        "src/constants/*"
+      "@constants": [
+        "src/constants/index"
       ],
       "@helpers/*": [
         "src/helpers/*"
       ],
-      "@interfaces/*": [
-        "src/interfaces/*"
+      "@interfaces": [
+        "src/interfaces/index"
       ],
       "@utils/*": [
         "src/utils/*"

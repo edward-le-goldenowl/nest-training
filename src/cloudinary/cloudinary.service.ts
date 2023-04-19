@@ -3,7 +3,7 @@ import { UploadApiErrorResponse, UploadApiResponse, v2 } from 'cloudinary';
 import { ConfigService } from '@nestjs/config';
 import toStream = require('buffer-to-stream');
 
-import { errorMessages, errorCodes } from '@constants/index';
+import { errorMessages, errorCodes } from '@constants';
 
 @Injectable()
 export class CloudinaryService {

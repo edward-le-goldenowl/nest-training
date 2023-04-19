@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { Response } from 'express';
 
-import { errorMessages } from '@constants/messages';
+import { errorMessages } from '@constants';
 
 interface IExceptionResponse {
   statusCode: string;

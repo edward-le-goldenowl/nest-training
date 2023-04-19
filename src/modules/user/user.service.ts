@@ -10,8 +10,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 
-import { IRequest } from '@interfaces/index';
-import { errorCodes, errorMessages } from '@constants/index';
+import { IRequest } from '@interfaces';
+import { errorCodes, errorMessages } from '@constants';
 import PostsEntity from '@posts/entities/posts.entity';
 import { CloudinaryService } from '@cloudinary/cloudinary.service';
 

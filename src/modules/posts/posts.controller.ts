@@ -17,8 +17,8 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 
-import { successMessages } from '@constants/index';
-import { IResponseBase, IRequest } from '@interfaces/index';
+import { successMessages } from '@constants';
+import { IResponseBase, IRequest } from '@interfaces';
 import { AccessTokenGuard } from '@common/guards';
 
 import { AddNewPostDTO, UpdatePostDTO } from './dto/posts.dto';

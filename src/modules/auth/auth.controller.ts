@@ -13,8 +13,8 @@ import {
 } from '@nestjs/common';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 
-import { IResponseBase, IRequest } from '@interfaces/index';
-import { successMessages } from '@constants/messages';
+import { IResponseBase, IRequest } from '@interfaces';
+import { successMessages } from '@constants';
 import {
   AccessTokenGuard,
   RefreshTokenGuard,

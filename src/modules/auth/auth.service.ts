@@ -11,9 +11,9 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 
 import UserService from '@user/user.service';
-import { IRequest } from '@interfaces/index';
+import { IRequest } from '@interfaces';
 import { IAccountQueryResponse } from '@user/user.interface';
-import { errorMessages, errorCodes } from '@constants/index';
+import { errorMessages, errorCodes } from '@constants';
 
 import { ICurrentUserResponse } from './auth.interface';
 

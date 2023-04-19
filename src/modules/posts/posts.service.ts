@@ -8,8 +8,8 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
-import { IRequest } from '@interfaces/index';
-import { errorMessages, errorCodes, roles } from '@constants/index';
+import { IRequest } from '@interfaces';
+import { errorMessages, errorCodes, roles } from '@constants';
 import { CloudinaryService } from '@cloudinary/cloudinary.service';
 import UserService from '@user/user.service';
 

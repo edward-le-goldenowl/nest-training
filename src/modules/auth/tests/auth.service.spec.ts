@@ -10,8 +10,8 @@ import {
 } from '@nestjs/common';
 
 import UserService from '@user/user.service';
-import { IRequest } from '@interfaces/request.interface';
-import { errorMessages, errorCodes } from '@constants/index';
+import { IRequest } from '@interfaces';
+import { errorMessages, errorCodes } from '@constants';
 
 import { AuthenticationService } from '../auth.service';
 
