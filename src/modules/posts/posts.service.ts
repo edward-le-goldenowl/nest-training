@@ -14,10 +14,12 @@ import CatchError from '@utils/catchError';
 
 import PostsEntity from './entities/posts.entity';
 import {
+  IListPosts,
   INewPostPayload,
   IGetPostResponse,
   IUpdatePostPayload,
   IUpdatePostStatusPayload,
+  IGetListPostsQuery,
 } from './posts.interface';
 import {
   AddNewPostDTO,
@@ -205,5 +207,29 @@ export default class PostsService {
     } catch (error) {
       throw new CatchError(error);
     }
+  }
+
+  public async getListPosts(query: IGetListPostsQuery): Promise<IListPosts> {
+    const { page = 1, limit = 10, status } = query;
+    const skip = (page - 1) * limit;
+    const totalCount = await this.postsRepository
+      .createQueryBuilder('posts')
+      .where(!status ? 'true' : 'posts.status = :status', { status })
+      .getCount();
+    const totalPages = Math.ceil(totalCount / limit);
+    const posts = await this.postsRepository
+      .createQueryBuilder('posts')
+      .where(!status ? 'true' : 'posts.status = :status', { status })
+      .skip(skip)
+      .take(limit)
+      .getMany();
+
+    return {
+      posts: posts,
+      limit: limit,
+      currentPage: page,
+      count: posts.length,
+      totalPages: totalPages,
+    };
   }
 }

@@ -3,6 +3,7 @@ import {
   Req,
   Controller,
   Post,
+  Query,
   Get,
   Delete,
   Param,
@@ -26,8 +27,9 @@ import {
   AddNewPostDTO,
   UpdatePostDTO,
   UpdatePostStatusDTO,
+  GetListPostsDTO,
 } from './dto/posts.dto';
-import { IGetPostResponse } from './posts.interface';
+import { IGetPostResponse, IListPosts } from './posts.interface';
 import PostsService from './posts.service';
 
 @ApiTags('Posts')
@@ -61,6 +63,22 @@ export default class PostsController {
     const response = await this.postsService.create(req, previewImage, payload);
     return {
       data: { post: response },
+      message: successMessages.SUCCESS,
+      error: '',
+    };
+  }
+
+  @UseGuards(AccessTokenGuard, RolesGuard)
+  @HttpCode(HttpStatus.OK)
+  @Get(['/list'])
+  @Roles(roles.ADMIN)
+  @ApiOkResponse({ description: 'Get list posts' })
+  async getListPosts(
+    @Query() query: GetListPostsDTO,
+  ): Promise<IResponseBase<{ list: IListPosts }>> {
+    const response = await this.postsService.getListPosts(query);
+    return {
+      data: { list: response },
       message: successMessages.SUCCESS,
       error: '',
     };

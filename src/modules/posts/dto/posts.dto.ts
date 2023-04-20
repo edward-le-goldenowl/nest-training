@@ -5,8 +5,10 @@ import {
   MaxLength,
   MinLength,
   IsIn,
+  IsInt,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 
 export class AddNewPostDTO {
   @ApiProperty()
@@ -39,5 +41,21 @@ export class UpdatePostDTO {
 export class UpdatePostStatusDTO {
   @ApiProperty()
   @IsIn(['approved', 'rejected'])
+  status: string;
+}
+
+export class GetListPostsDTO {
+  @ApiProperty()
+  @Type(() => Number)
+  @IsInt()
+  page: number;
+
+  @ApiProperty()
+  @Type(() => Number)
+  @IsInt()
+  limit: number;
+
+  @ApiProperty()
+  @IsOptional()
   status: string;
 }
