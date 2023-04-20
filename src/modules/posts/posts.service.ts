@@ -226,10 +226,12 @@ export default class PostsService {
 
     return {
       posts: posts,
-      limit: limit,
-      currentPage: page,
-      count: posts.length,
-      totalPages: totalPages,
+      pagination: {
+        limit: limit,
+        currentPage: page,
+        count: posts.length,
+        totalPages: totalPages,
+      },
     };
   }
 }

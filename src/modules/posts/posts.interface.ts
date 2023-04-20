@@ -29,10 +29,12 @@ export type TStatus = 'pending' | 'approved' | 'rejected';
 
 export interface IListPosts {
   posts: IGetPostResponse[];
-  limit: number;
-  currentPage: number;
-  count: number;
-  totalPages: number;
+  pagination: {
+    limit: number;
+    currentPage: number;
+    count: number;
+    totalPages: number;
+  };
 }
 
 export interface IGetListPostsQuery {
