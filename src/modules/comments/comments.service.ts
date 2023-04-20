@@ -160,6 +160,7 @@ export default class CommentsService {
   ): Promise<IListComments> {
     try {
       const { page = 1, limit = 10, postId } = query;
+      await this.postsService.getPostById(postId);
       const skip = (page - 1) * limit;
       const totalCount = await this.commentsRepository
         .createQueryBuilder('comments')

@@ -11,6 +11,7 @@ import * as bcrypt from 'bcrypt';
 import { IRequest } from '@interfaces';
 import { errorCodes, errorMessages } from '@constants';
 import PostsEntity from '@posts/entities/posts.entity';
+import CommentsEntity from '@comments/entities/comments.entity';
 import { CloudinaryService } from '@cloudinary/cloudinary.service';
 import CatchError from '@utils/catchError';
 
@@ -35,6 +36,8 @@ export default class UserService {
     private userProfileRepository: Repository<UserProfileEntity>,
     @InjectRepository(PostsEntity)
     private postsRepository: Repository<PostsEntity>,
+    @InjectRepository(CommentsEntity)
+    private commentsRepository: Repository<CommentsEntity>,
     private cloudinary: CloudinaryService,
   ) {}
 
@@ -97,6 +100,12 @@ export default class UserService {
           cause: new Error(),
           description: errorCodes.ERR_USER_NOT_FOUND,
         });
+
+      await this.commentsRepository
+        .createQueryBuilder('comments')
+        .softDelete()
+        .where('userId = :id', { id: account.id })
+        .execute();
 
       await this.postsRepository
         .createQueryBuilder('posts')

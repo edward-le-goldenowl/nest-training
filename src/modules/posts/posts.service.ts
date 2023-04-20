@@ -11,6 +11,7 @@ import { errorMessages, errorCodes, roles } from '@constants';
 import { CloudinaryService } from '@cloudinary/cloudinary.service';
 import UserService from '@user/user.service';
 import CatchError from '@utils/catchError';
+import CommentsEntity from '@comments/entities/comments.entity';
 
 import PostsEntity from './entities/posts.entity';
 import {
@@ -32,6 +33,8 @@ export default class PostsService {
   constructor(
     @InjectRepository(PostsEntity)
     private postsRepository: Repository<PostsEntity>,
+    @InjectRepository(CommentsEntity)
+    private commentsRepository: Repository<CommentsEntity>,
     private cloudinary: CloudinaryService,
     private userService: UserService,
   ) {}
@@ -99,6 +102,11 @@ export default class PostsService {
           description: errorCodes.ERR_DELETE_POST_FAILED,
         });
       }
+      await this.commentsRepository
+        .createQueryBuilder('comments')
+        .softDelete()
+        .where('postId = :id', { id })
+        .execute();
       await this.postsRepository
         .createQueryBuilder('posts')
         .softDelete()
