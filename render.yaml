@@ -1,0 +1,15 @@
+previewsEnabled: true
+previewsExpireAfterDays: 1
+
+services:
+  - type: web
+    name: demo_nestjs
+    env: docker
+    region: singapore
+    plan: starter
+    branch: main
+    dockerfilePath: ./Dockerfile
+    dockerContext: ./
+    postDeploy: |
+      echo "Running migrations..."
+      npm run typeorm:run-migrations

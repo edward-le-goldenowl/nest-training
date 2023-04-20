@@ -11,7 +11,8 @@ RUN npm install
 # Bundle app source
 COPY . .
 
-RUN npm run typeorm:run-migrations
+RUN npm run build
+
 
 EXPOSE 3000
 
