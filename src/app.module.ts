@@ -7,6 +7,7 @@ import { UserModule } from '@user/user.module';
 import { AuthenticationModule } from '@auth/auth.module';
 import { CloudinaryModule } from '@cloudinary/cloudinary.module';
 import { PostsModule } from '@posts/posts.module';
+import { CommentsModule } from '@comments/comments.module';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -39,6 +40,7 @@ import AppDataSource from 'orm.config';
     AuthenticationModule,
     CloudinaryModule,
     PostsModule,
+    CommentsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

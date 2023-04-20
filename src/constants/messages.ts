@@ -12,6 +12,9 @@ enum errorMessages {
   UPDATE_POST_FAILED = 'Cannot update this post',
   DELETE_POST_FAILED = 'Cannot delete this post',
   UPDATE_POST_STATUS_FAILED = 'Cannot update status this post',
+  ADD_NEW_COMMENT_FAILED = 'Cannot add comment for this post',
+  NOT_FOUND_COMMENT = 'Cannot find this comment',
+  DELETE_COMMENT_FAILED = 'Cannot delete this comment',
 }
 
 enum successMessages {

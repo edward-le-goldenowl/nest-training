@@ -79,32 +79,31 @@ export default class PostsService {
   public async deletePostById(req: IRequest, id: string) {
     try {
       const user = req.user;
-      if (user) {
-        const userId = user['id'];
-        const account = await this.userService.getAccountById(userId);
-        const currentPost = await this.getPostById(id);
-        if (
-          !account ||
-          !currentPost ||
-          (currentPost &&
-            currentPost.authorId !== userId &&
-            account.role === roles.MEMBER)
-        ) {
-          throw new ForbiddenException(errorMessages.DELETE_POST_FAILED, {
-            cause: new Error(),
-            description: errorCodes.ERR_DELETE_POST_FAILED,
-          });
-        }
-        await this.postsRepository
-          .createQueryBuilder('posts')
-          .softDelete()
-          .where('id = :id', { id })
-          .execute();
+      if (!user)
+        throw new ForbiddenException(errorMessages.DELETE_POST_FAILED, {
+          cause: new Error(),
+          description: errorCodes.ERR_DELETE_POST_FAILED,
+        });
+      const userId = user['id'];
+      const account = await this.userService.getAccountById(userId);
+      const currentPost = await this.getPostById(id);
+      if (
+        !account ||
+        !currentPost ||
+        (currentPost &&
+          currentPost.authorId !== userId &&
+          account.role === roles.MEMBER)
+      ) {
+        throw new ForbiddenException(errorMessages.DELETE_POST_FAILED, {
+          cause: new Error(),
+          description: errorCodes.ERR_DELETE_POST_FAILED,
+        });
       }
-      throw new ForbiddenException(errorMessages.DELETE_POST_FAILED, {
-        cause: new Error(),
-        description: errorCodes.ERR_DELETE_POST_FAILED,
-      });
+      await this.postsRepository
+        .createQueryBuilder('posts')
+        .softDelete()
+        .where('posts.id = :id', { id })
+        .execute();
     } catch (error) {
       throw new CatchError(error);
     }
@@ -210,28 +209,31 @@ export default class PostsService {
   }
 
   public async getListPosts(query: IGetListPostsQuery): Promise<IListPosts> {
-    const { page = 1, limit = 10, status } = query;
-    const skip = (page - 1) * limit;
-    const totalCount = await this.postsRepository
-      .createQueryBuilder('posts')
-      .where(!status ? 'true' : 'posts.status = :status', { status })
-      .getCount();
-    const totalPages = Math.ceil(totalCount / limit);
-    const posts = await this.postsRepository
-      .createQueryBuilder('posts')
-      .where(!status ? 'true' : 'posts.status = :status', { status })
-      .skip(skip)
-      .take(limit)
-      .getMany();
-
-    return {
-      posts: posts,
-      pagination: {
-        limit: limit,
-        currentPage: page,
-        count: posts.length,
-        totalPages: totalPages,
-      },
-    };
+    try {
+      const { page = 1, limit = 10, status } = query;
+      const skip = (page - 1) * limit;
+      const totalCount = await this.postsRepository
+        .createQueryBuilder('posts')
+        .where(!status ? 'true' : 'posts.status = :status', { status })
+        .getCount();
+      const totalPages = Math.ceil(totalCount / limit);
+      const posts = await this.postsRepository
+        .createQueryBuilder('posts')
+        .where(!status ? 'true' : 'posts.status = :status', { status })
+        .skip(skip)
+        .take(limit)
+        .getMany();
+      return {
+        posts: posts,
+        pagination: {
+          limit: limit,
+          currentPage: page,
+          count: posts.length,
+          totalPages: totalPages,
+        },
+      };
+    } catch (error) {
+      throw new CatchError(error);
+    }
   }
 }

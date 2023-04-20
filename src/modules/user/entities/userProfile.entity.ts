@@ -1,20 +1,11 @@
-import {
-  Column,
-  Entity,
-  OneToOne,
-  DeleteDateColumn,
-  CreateDateColumn,
-  UpdateDateColumn,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, OneToOne } from 'typeorm';
+
+import BaseEntity from '@common/entities/BaseEntity';
 
 import Account from './account.entity';
 
 @Entity()
-class UserProfile {
-  @PrimaryGeneratedColumn('uuid')
-  public id: string;
-
+class UserProfile extends BaseEntity {
   @Column()
   public fullName: string;
 
@@ -29,15 +20,6 @@ class UserProfile {
 
   @Column({ nullable: true })
   public phone: string;
-
-  @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-  public createdAt: Date;
-
-  @UpdateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-  public updatedAt: Date;
-
-  @DeleteDateColumn()
-  public deletedAt: Date;
 
   @OneToOne(() => Account, (account) => account.userProfile)
   account: Account;

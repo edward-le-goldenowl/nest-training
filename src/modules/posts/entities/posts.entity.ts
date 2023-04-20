@@ -1,20 +1,11 @@
-import {
-  Column,
-  Entity,
-  ManyToOne,
-  DeleteDateColumn,
-  CreateDateColumn,
-  UpdateDateColumn,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
 
 import User from '@user/entities/account.entity';
+import Comments from '@comments/entities/comments.entity';
+import BaseEntity from '@common/entities/BaseEntity';
 
 @Entity()
-class Posts {
-  @PrimaryGeneratedColumn('uuid')
-  public id: string;
-
+class Posts extends BaseEntity {
   @Column()
   public title: string;
 
@@ -30,17 +21,11 @@ class Posts {
   @Column({ default: 'pending' })
   public status: string;
 
-  @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-  public createdAt: Date;
-
-  @UpdateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-  public updatedAt: Date;
-
-  @DeleteDateColumn()
-  public deletedAt: Date;
-
   @ManyToOne(() => User, (user) => user.posts)
   author: User;
+
+  @OneToMany(() => Comments, (comments) => comments.post)
+  comments: Comments[];
 }
 
 export default Posts;

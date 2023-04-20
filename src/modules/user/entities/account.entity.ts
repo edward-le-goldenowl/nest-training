@@ -1,25 +1,14 @@
-import {
-  Column,
-  Entity,
-  OneToOne,
-  OneToMany,
-  JoinColumn,
-  DeleteDateColumn,
-  CreateDateColumn,
-  UpdateDateColumn,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, OneToOne, OneToMany, JoinColumn } from 'typeorm';
 import { Exclude } from 'class-transformer';
 
 import Posts from '@posts/entities/posts.entity';
+import Comments from '@comments/entities/comments.entity';
+import BaseEntity from '@common/entities/BaseEntity';
 
 import UserProfile from './userProfile.entity';
 
 @Entity()
-class Account {
-  @PrimaryGeneratedColumn('uuid')
-  public id: string;
-
+class Account extends BaseEntity {
   @Column({ unique: true })
   public email: string;
 
@@ -37,21 +26,15 @@ class Account {
   @Column({ nullable: true })
   public role: string;
 
-  @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-  public createdAt: Date;
-
-  @UpdateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-  public updatedAt: Date;
-
-  @DeleteDateColumn()
-  public deletedAt: Date;
-
   @OneToOne(() => UserProfile, (userProfile) => userProfile.account)
   @JoinColumn()
   userProfile: UserProfile;
 
   @OneToMany(() => Posts, (posts) => posts.author)
   posts: Posts[];
+
+  @OneToMany(() => Comments, (comments) => comments.user)
+  comments: Comments[];
 }
 
 export default Account;
