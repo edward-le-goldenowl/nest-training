@@ -7,9 +7,9 @@ services:
     env: docker
     region: singapore
     plan: starter
-    branch: main
+    branch: master
     dockerfilePath: ./Dockerfile
     dockerContext: ./
     postDeploy: |
       echo "Running migrations..."
-      npm run typeorm:run-migrations
+      docker-compose exec app npm run typeorm:run-migrations
