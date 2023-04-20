@@ -44,6 +44,9 @@
       "@posts/*": [
         "src/modules/posts/*"
       ],
+      "@comments/*": [
+        "src/modules/comments/*"
+      ],
     },
     "incremental": true,
     "skipLibCheck": true,
