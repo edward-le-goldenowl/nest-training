@@ -4,6 +4,7 @@ import {
   IsString,
   MaxLength,
   MinLength,
+  IsIn,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -33,4 +34,10 @@ export class UpdatePostDTO {
   @MinLength(200)
   @MaxLength(1000000)
   content: string;
+}
+
+export class UpdatePostStatusDTO {
+  @ApiProperty()
+  @IsIn(['approved', 'rejected'])
+  status: string;
 }

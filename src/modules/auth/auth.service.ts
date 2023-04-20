@@ -1,10 +1,8 @@
 import {
-  HttpException,
   Injectable,
   BadRequestException,
   UnauthorizedException,
   ForbiddenException,
-  InternalServerErrorException,
 } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
@@ -14,6 +12,7 @@ import UserService from '@user/user.service';
 import { IRequest } from '@interfaces';
 import { IAccountQueryResponse } from '@user/user.interface';
 import { errorMessages, errorCodes } from '@constants';
+import CatchError from '@utils/catchError';
 
 import { ICurrentUserResponse } from './auth.interface';
 
@@ -40,14 +39,7 @@ export class AuthenticationService {
         description: errorCodes.ERR_LOG_OUT,
       });
     } catch (error) {
-      if (error instanceof HttpException) {
-        throw error;
-      } else {
-        console.error(error);
-        throw new InternalServerErrorException(
-          errorMessages.SOME_THING_WENT_WRONG,
-        );
-      }
+      throw new CatchError(error);
     }
   }
 
@@ -76,14 +68,7 @@ export class AuthenticationService {
         description: errorCodes.ERR_LOGIN_FAILED,
       });
     } catch (error) {
-      if (error instanceof HttpException) {
-        throw error;
-      } else {
-        console.error(error);
-        throw new InternalServerErrorException(
-          errorMessages.SOME_THING_WENT_WRONG,
-        );
-      }
+      throw new CatchError(error);
     }
   }
 
@@ -111,14 +96,7 @@ export class AuthenticationService {
         description: errorCodes.ERR_LOGIN_FAILED,
       });
     } catch (error) {
-      if (error instanceof HttpException) {
-        throw error;
-      } else {
-        console.error(error);
-        throw new InternalServerErrorException(
-          errorMessages.SOME_THING_WENT_WRONG,
-        );
-      }
+      throw new CatchError(error);
     }
   }
 
@@ -202,14 +180,7 @@ export class AuthenticationService {
         description: errorCodes.ERR_REFRESH_TOKEN,
       });
     } catch (error) {
-      if (error instanceof HttpException) {
-        throw error;
-      } else {
-        console.error(error);
-        throw new InternalServerErrorException(
-          errorMessages.SOME_THING_WENT_WRONG,
-        );
-      }
+      throw new CatchError(error);
     }
   }
 }

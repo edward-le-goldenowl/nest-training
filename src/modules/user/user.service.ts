@@ -1,8 +1,6 @@
 import {
   ConflictException,
   ForbiddenException,
-  HttpException,
-  InternalServerErrorException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -14,6 +12,7 @@ import { IRequest } from '@interfaces';
 import { errorCodes, errorMessages } from '@constants';
 import PostsEntity from '@posts/entities/posts.entity';
 import { CloudinaryService } from '@cloudinary/cloudinary.service';
+import CatchError from '@utils/catchError';
 
 import AccountEntity from './entities/account.entity';
 import UserProfileEntity from './entities/userProfile.entity';
@@ -83,14 +82,7 @@ export default class UserService {
         description: errorCodes.ERR_UPLOAD_FILE_FAILED,
       });
     } catch (error) {
-      if (error instanceof HttpException) {
-        throw error;
-      } else {
-        console.error(error);
-        throw new InternalServerErrorException(
-          errorMessages.SOME_THING_WENT_WRONG,
-        );
-      }
+      throw new CatchError(error);
     }
   }
 
@@ -124,14 +116,7 @@ export default class UserService {
         .where('id = :id', { id: account.userProfileId })
         .execute();
     } catch (error) {
-      if (error instanceof HttpException) {
-        throw error;
-      } else {
-        console.error(error);
-        throw new InternalServerErrorException(
-          errorMessages.SOME_THING_WENT_WRONG,
-        );
-      }
+      throw new CatchError(error);
     }
   }
 
@@ -160,14 +145,7 @@ export default class UserService {
         description: errorCodes.ERR_USER_NOT_FOUND,
       });
     } catch (error) {
-      if (error instanceof HttpException) {
-        throw error;
-      } else {
-        console.error(error);
-        throw new InternalServerErrorException(
-          errorMessages.SOME_THING_WENT_WRONG,
-        );
-      }
+      throw new CatchError(error);
     }
   }
 
@@ -237,14 +215,7 @@ export default class UserService {
       const savedAccount = await this.accountRepository.save(newUserAccount);
       return savedAccount;
     } catch (error) {
-      if (error instanceof HttpException) {
-        throw error;
-      } else {
-        console.error(error);
-        throw new InternalServerErrorException(
-          errorMessages.SOME_THING_WENT_WRONG,
-        );
-      }
+      throw new CatchError(error);
     }
   }
 

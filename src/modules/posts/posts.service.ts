@@ -1,7 +1,5 @@
 import {
   ForbiddenException,
-  HttpException,
-  InternalServerErrorException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -12,14 +10,20 @@ import { IRequest } from '@interfaces';
 import { errorMessages, errorCodes, roles } from '@constants';
 import { CloudinaryService } from '@cloudinary/cloudinary.service';
 import UserService from '@user/user.service';
+import CatchError from '@utils/catchError';
 
 import PostsEntity from './entities/posts.entity';
 import {
   INewPostPayload,
   IGetPostResponse,
   IUpdatePostPayload,
+  IUpdatePostStatusPayload,
 } from './posts.interface';
-import { AddNewPostDTO, UpdatePostDTO } from './dto/posts.dto';
+import {
+  AddNewPostDTO,
+  UpdatePostDTO,
+  UpdatePostStatusDTO,
+} from './dto/posts.dto';
 
 @Injectable()
 export default class PostsService {
@@ -66,14 +70,7 @@ export default class PostsService {
         description: errorCodes.ERR_CREATE_NEW_POST,
       });
     } catch (error) {
-      if (error instanceof HttpException) {
-        throw error;
-      } else {
-        console.error(error);
-        throw new InternalServerErrorException(
-          errorMessages.SOME_THING_WENT_WRONG,
-        );
-      }
+      throw new CatchError(error);
     }
   }
 
@@ -107,14 +104,7 @@ export default class PostsService {
         description: errorCodes.ERR_DELETE_POST_FAILED,
       });
     } catch (error) {
-      if (error instanceof HttpException) {
-        throw error;
-      } else {
-        console.error(error);
-        throw new InternalServerErrorException(
-          errorMessages.SOME_THING_WENT_WRONG,
-        );
-      }
+      throw new CatchError(error);
     }
   }
 
@@ -130,14 +120,7 @@ export default class PostsService {
         description: errorCodes.ERR_POST_NOT_FOUND,
       });
     } catch (error) {
-      if (error instanceof HttpException) {
-        throw error;
-      } else {
-        console.error(error);
-        throw new InternalServerErrorException(
-          errorMessages.SOME_THING_WENT_WRONG,
-        );
-      }
+      throw new CatchError(error);
     }
   }
 
@@ -191,14 +174,36 @@ export default class PostsService {
         description: errorCodes.ERR_POST_UPDATE_FAILED,
       });
     } catch (error) {
-      if (error instanceof HttpException) {
-        throw error;
-      } else {
-        console.error(error);
-        throw new InternalServerErrorException(
-          errorMessages.SOME_THING_WENT_WRONG,
-        );
+      throw new CatchError(error);
+    }
+  }
+
+  public async updatePostStatusById(
+    id: string,
+    payload: UpdatePostStatusDTO,
+  ): Promise<IGetPostResponse> {
+    try {
+      const currentPost = await this.getPostById(id);
+      if (!currentPost) {
+        throw new ForbiddenException(errorMessages.UPDATE_POST_STATUS_FAILED, {
+          cause: new Error(),
+          description: errorCodes.ERR_POST_STATUS_UPDATE_FAILED,
+        });
       }
+      const dataUpdate: IUpdatePostStatusPayload = {
+        status: payload.status,
+      };
+
+      const updatedResponse = await this.postsRepository
+        .createQueryBuilder('posts')
+        .update()
+        .set(dataUpdate)
+        .where('id = :id', { id })
+        .returning('*')
+        .execute();
+      return updatedResponse.raw;
+    } catch (error) {
+      throw new CatchError(error);
     }
   }
 }

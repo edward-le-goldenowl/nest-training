@@ -27,6 +27,9 @@ class Posts {
   @Column({ nullable: true })
   public previewImage: string;
 
+  @Column({ default: 'pending' })
+  public status: string;
+
   @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   public createdAt: Date;
 

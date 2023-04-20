@@ -10,7 +10,8 @@ enum errorMessages {
   CREATE_NEW_POST_FAILED = 'Cannot create this post',
   NOT_FOUND_POST = 'Cannot find this post',
   UPDATE_POST_FAILED = 'Cannot update this post',
-  DELETE_POST_FAILED = 'Cannot update this post',
+  DELETE_POST_FAILED = 'Cannot delete this post',
+  UPDATE_POST_STATUS_FAILED = 'Cannot update status this post',
 }
 
 enum successMessages {

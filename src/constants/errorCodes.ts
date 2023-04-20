@@ -11,6 +11,7 @@ enum errorCodes {
   ERR_POST_NOT_FOUND = 'ErrPostNotFound',
   ERR_DELETE_POST_FAILED = 'ErrDeletePostFailed',
   ERR_POST_UPDATE_FAILED = 'ErrUpdatePostFailed',
+  ERR_POST_STATUS_UPDATE_FAILED = 'ErrUpdatePostStatusFailed',
 }
 
 export { errorCodes };

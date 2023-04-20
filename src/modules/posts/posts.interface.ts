@@ -20,3 +20,7 @@ export interface IUpdatePostPayload {
   content?: string;
   previewImage?: string;
 }
+
+export interface IUpdatePostStatusPayload {
+  status: string;
+}
