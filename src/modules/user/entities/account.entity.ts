@@ -4,6 +4,7 @@ import { Exclude } from 'class-transformer';
 import Posts from '@posts/entities/posts.entity';
 import Comments from '@comments/entities/comments.entity';
 import BaseEntity from '@common/entities/BaseEntity';
+import CommentLikes from '@comments/entities/commentLikes.entity';
 
 import UserProfile from './userProfile.entity';
 
@@ -35,6 +36,8 @@ class Account extends BaseEntity {
 
   @OneToMany(() => Comments, (comments) => comments.user)
   comments: Comments[];
+  @OneToMany(() => CommentLikes, (likes) => likes.commentId)
+  likes: CommentLikes[];
 }
 
 export default Account;

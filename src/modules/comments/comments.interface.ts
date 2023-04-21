@@ -33,3 +33,18 @@ export interface IListComments {
     totalPages: number;
   };
 }
+
+export interface ILikeCommentPayload {
+  commentId: string;
+  userId?: string;
+}
+
+export interface IGetLikeCommentResponse {
+  id: string;
+  commentId: string;
+  postId: string;
+  userId: string;
+  fullName: string;
+  createdAt: Date;
+  updatedAt: Date;
+}

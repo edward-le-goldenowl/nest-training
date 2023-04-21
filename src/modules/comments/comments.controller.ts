@@ -23,7 +23,11 @@ import {
   UpdateCommentDTO,
   GetListCommentsDTO,
 } from './dto/comments.dto';
-import { IGetCommentResponse, IListComments } from './comments.interface';
+import {
+  IGetCommentResponse,
+  IListComments,
+  IGetLikeCommentResponse,
+} from './comments.interface';
 import CommentsService from './comments.service';
 
 @ApiTags('Comments')
@@ -112,6 +116,54 @@ export default class PostsController {
     );
     return {
       data: { comment: response },
+      message: successMessages.SUCCESS,
+      error: '',
+    };
+  }
+
+  @UseGuards(AccessTokenGuard)
+  @HttpCode(HttpStatus.OK)
+  @Post(['/like/:id'])
+  @ApiOkResponse({ description: 'Like a comment' })
+  async likeComment(
+    @Req() req: IRequest,
+    @Param('id') id: string,
+  ): Promise<IResponseBase<{ commentLike: IGetLikeCommentResponse }>> {
+    const response = await this.commentsService.likeComment(req, id);
+    return {
+      data: { commentLike: response },
+      message: successMessages.SUCCESS,
+      error: '',
+    };
+  }
+
+  @UseGuards(AccessTokenGuard)
+  @HttpCode(HttpStatus.OK)
+  @Delete(['/dislike/:id'])
+  @ApiOkResponse({ description: 'Dislike comment by id' })
+  async dislikeComment(
+    @Param('id') id: string,
+    @Req() req: IRequest,
+  ): Promise<IResponseBase<null>> {
+    await this.commentsService.dislikeComment(req, id);
+    return {
+      data: null,
+      message: successMessages.SUCCESS,
+      error: '',
+    };
+  }
+
+  @UseGuards(AccessTokenGuard)
+  @HttpCode(HttpStatus.OK)
+  @Get(['/likes/:id'])
+  @ApiOkResponse({ description: 'Get all users like comment' })
+  async getAllUsersLikeComment(
+    @Req() req: IRequest,
+    @Param('id') id: string,
+  ): Promise<IResponseBase<{ likes: IGetLikeCommentResponse[] }>> {
+    const response = await this.commentsService.getAllUsersLikeComment(req, id);
+    return {
+      data: { likes: response },
       message: successMessages.SUCCESS,
       error: '',
     };

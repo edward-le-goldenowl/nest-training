@@ -15,6 +15,8 @@ enum errorCodes {
   ERR_ADD_NEW_COMMENT_FAILED = 'ErrAddNewCommentFailed',
   ERR_COMMENT_NOT_FOUND = 'ErrCommentNotFound',
   ERR_DELETE_COMMENT_FAILED = 'ErrDeleteCommentFailed',
+  ERR_LIKE_COMMENT_FAILED = 'ErrLikeCommentFailed',
+  ERR_DISLIKE_COMMENT_FAILED = 'ErrDislikeCommentFailed',
 }
 
 export { errorCodes };

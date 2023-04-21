@@ -5,7 +5,7 @@ import { UserModule } from '@user/user.module';
 import { PostsModule } from '@posts/posts.module';
 
 import CommentsEntity from './entities/comments.entity';
-
+import CommentLikesEntity from './entities/commentLikes.entity';
 import CommentsController from './comments.controller';
 import CommentsService from './comments.service';
 
@@ -13,7 +13,7 @@ import CommentsService from './comments.service';
   imports: [
     UserModule,
     PostsModule,
-    TypeOrmModule.forFeature([CommentsEntity]),
+    TypeOrmModule.forFeature([CommentsEntity, CommentLikesEntity]),
   ],
   controllers: [CommentsController],
   providers: [CommentsService],
