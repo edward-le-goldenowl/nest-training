@@ -3,10 +3,10 @@ import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import * as cookieParser from 'cookie-parser';
 
+import { ExcludeNullInterceptor } from '@utils/excludeNull.interceptor';
 import { BadRequestExceptionFilter } from '@utils/requestExceptionFilter';
 
 import { AppModule } from './app.module';
-import { ExcludeNullInterceptor } from '@utils/excludeNull.interceptor';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -28,7 +28,7 @@ async function bootstrap() {
     .addTag('demo')
     .build();
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, document);
+  SwaggerModule.setup('docs', app, document);
 
   await app.listen(3000);
 }
