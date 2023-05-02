@@ -4,14 +4,12 @@ import {
   Get,
   Body,
   Controller,
-  HttpCode,
   Post,
   UseGuards,
-  HttpStatus,
   UseInterceptors,
   ClassSerializerInterceptor,
 } from '@nestjs/common';
-import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { ApiOkResponse, ApiTags, ApiBody } from '@nestjs/swagger';
 
 import { IResponseBase, IRequest } from '@interfaces';
 import { successMessages } from '@constants';
@@ -30,24 +28,21 @@ import { LoginDTO } from './dto/auth.dto';
 export class AuthenticationController {
   constructor(private readonly authService: AuthenticationService) {}
 
-  @HttpCode(HttpStatus.OK)
   @UseGuards(LocalAuthenticationGuard)
   @UseInterceptors(ClassSerializerInterceptor)
   @Post('login')
   @ApiOkResponse({ description: 'Login' })
+  @ApiBody({ type: LoginDTO })
   async login(
     @Req() req: IRequest,
-    @Body() loginDTO: LoginDTO,
   ): Promise<IResponseBase<ICurrentUserResponse>> {
     const response = await this.authService.login(req);
     return {
       data: response,
       message: successMessages.SUCCESS,
-      error: '',
     };
   }
 
-  @HttpCode(HttpStatus.OK)
   @UseGuards(AccessTokenGuard)
   @Post('logout')
   @ApiOkResponse({ description: 'Logout' })
@@ -56,11 +51,9 @@ export class AuthenticationController {
     return {
       data: null,
       message: successMessages.SUCCESS,
-      error: '',
     };
   }
 
-  @HttpCode(HttpStatus.OK)
   @UseGuards(RefreshTokenGuard)
   @Get('refresh')
   @ApiOkResponse({ description: 'Get new tokens' })
@@ -71,7 +64,6 @@ export class AuthenticationController {
     return {
       data: response,
       message: successMessages.SUCCESS,
-      error: '',
     };
   }
 }

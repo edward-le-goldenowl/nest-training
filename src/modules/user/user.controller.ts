@@ -6,7 +6,6 @@ import {
   Get,
   Delete,
   Param,
-  HttpCode,
   UseGuards,
   HttpStatus,
   UseInterceptors,
@@ -34,7 +33,6 @@ export default class UserController {
 
   @UseInterceptors(ClassSerializerInterceptor)
   @Post(['/register'])
-  @HttpCode(HttpStatus.OK)
   @ApiOkResponse({ description: 'Register new user' })
   async register(
     @Body() payload: RegisterDTO,
@@ -43,7 +41,6 @@ export default class UserController {
     return {
       data: { user: response },
       message: successMessages.SUCCESS,
-      error: '',
     };
   }
 
@@ -58,12 +55,10 @@ export default class UserController {
     return {
       data: { user: response },
       message: successMessages.SUCCESS,
-      error: '',
     };
   }
 
   @UseGuards(AccessTokenGuard, RolesGuard)
-  @HttpCode(HttpStatus.OK)
   @Delete(['/delete/:id'])
   @Roles(roles.ADMIN)
   @ApiOkResponse({ description: 'Delete user by id' })
@@ -72,12 +67,10 @@ export default class UserController {
     return {
       data: null,
       message: successMessages.SUCCESS,
-      error: '',
     };
   }
 
   @UseGuards(AccessTokenGuard)
-  @HttpCode(HttpStatus.OK)
   @Patch('/updateProfile')
   @UseInterceptors(FileInterceptor('avatar'))
   @ApiOkResponse({ description: 'Update user profile' })
@@ -107,7 +100,6 @@ export default class UserController {
     return {
       data: { user: response },
       message: successMessages.SUCCESS,
-      error: '',
     };
   }
 }

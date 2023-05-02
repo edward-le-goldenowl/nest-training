@@ -7,9 +7,7 @@ import {
   Get,
   Delete,
   Param,
-  HttpCode,
   UseGuards,
-  HttpStatus,
   Patch,
 } from '@nestjs/common';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
@@ -36,7 +34,6 @@ export default class PostsController {
   constructor(private readonly commentsService: CommentsService) {}
 
   @UseGuards(AccessTokenGuard)
-  @HttpCode(HttpStatus.OK)
   @Post(['/new'])
   @ApiOkResponse({ description: 'Add new comment in post' })
   async addNewCommentInPost(
@@ -50,12 +47,10 @@ export default class PostsController {
     return {
       data: { comment: response },
       message: successMessages.SUCCESS,
-      error: '',
     };
   }
 
   @UseGuards(AccessTokenGuard)
-  @HttpCode(HttpStatus.OK)
   @Get(['/list'])
   @ApiOkResponse({ description: 'Get list comments in post' })
   async getListCommentsInPost(
@@ -65,12 +60,10 @@ export default class PostsController {
     return {
       data: { list: response },
       message: successMessages.SUCCESS,
-      error: '',
     };
   }
 
   @UseGuards(AccessTokenGuard)
-  @HttpCode(HttpStatus.OK)
   @Get(['/:id'])
   @ApiOkResponse({ description: 'Get comment by id' })
   async getCommentById(
@@ -80,12 +73,10 @@ export default class PostsController {
     return {
       data: { comment: response },
       message: successMessages.SUCCESS,
-      error: '',
     };
   }
 
   @UseGuards(AccessTokenGuard)
-  @HttpCode(HttpStatus.OK)
   @Delete(['/:id'])
   @ApiOkResponse({ description: 'Delete comment by id' })
   async deleteCommentById(
@@ -96,12 +87,10 @@ export default class PostsController {
     return {
       data: null,
       message: successMessages.SUCCESS,
-      error: '',
     };
   }
 
   @UseGuards(AccessTokenGuard)
-  @HttpCode(HttpStatus.OK)
   @Patch(['/:id'])
   @ApiOkResponse({ description: 'Update comment by id' })
   async updateCommentById(
@@ -117,12 +106,10 @@ export default class PostsController {
     return {
       data: { comment: response },
       message: successMessages.SUCCESS,
-      error: '',
     };
   }
 
   @UseGuards(AccessTokenGuard)
-  @HttpCode(HttpStatus.OK)
   @Post(['/like/:id'])
   @ApiOkResponse({ description: 'Like a comment' })
   async likeComment(
@@ -133,12 +120,10 @@ export default class PostsController {
     return {
       data: { commentLike: response },
       message: successMessages.SUCCESS,
-      error: '',
     };
   }
 
   @UseGuards(AccessTokenGuard)
-  @HttpCode(HttpStatus.OK)
   @Delete(['/dislike/:id'])
   @ApiOkResponse({ description: 'Dislike comment by id' })
   async dislikeComment(
@@ -149,12 +134,10 @@ export default class PostsController {
     return {
       data: null,
       message: successMessages.SUCCESS,
-      error: '',
     };
   }
 
   @UseGuards(AccessTokenGuard)
-  @HttpCode(HttpStatus.OK)
   @Get(['/likes/:id'])
   @ApiOkResponse({ description: 'Get all users like comment' })
   async getAllUsersLikeComment(
@@ -165,7 +148,6 @@ export default class PostsController {
     return {
       data: { likes: response },
       message: successMessages.SUCCESS,
-      error: '',
     };
   }
 }

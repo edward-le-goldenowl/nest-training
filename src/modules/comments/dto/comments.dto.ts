@@ -3,12 +3,16 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 
 export class AddNewCommentDTO {
-  @ApiProperty()
+  @ApiProperty({
+    example: 'postId_1',
+  })
   @IsNotEmpty()
   @IsString()
   postId: string;
 
-  @ApiProperty()
+  @ApiProperty({
+    example: 'Content here',
+  })
   @IsNotEmpty()
   @IsString()
   @MaxLength(2000)
@@ -16,7 +20,9 @@ export class AddNewCommentDTO {
 }
 
 export class UpdateCommentDTO {
-  @ApiProperty()
+  @ApiProperty({
+    example: 'Content here',
+  })
   @IsNotEmpty()
   @IsString()
   @MaxLength(2000)
@@ -24,17 +30,23 @@ export class UpdateCommentDTO {
 }
 
 export class GetListCommentsDTO {
-  @ApiProperty()
+  @ApiProperty({
+    example: 1,
+  })
   @Type(() => Number)
   @IsInt()
   page: number;
 
-  @ApiProperty()
+  @ApiProperty({
+    example: 10,
+  })
   @Type(() => Number)
   @IsInt()
   limit: number;
 
-  @ApiProperty()
+  @ApiProperty({
+    example: 'postId_1',
+  })
   @IsNotEmpty()
   @IsString()
   postId: string;

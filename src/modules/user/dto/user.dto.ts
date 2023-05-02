@@ -15,21 +15,31 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Match } from './match.decorator';
 
 export class RegisterDTO {
-  @ApiProperty()
+  @ApiProperty({
+    example: 'email@gmail.com',
+  })
   @IsNotEmpty()
   @IsEmail()
   email: string;
 
-  @ApiProperty()
+  @ApiProperty({
+    example: 'Edward Le',
+  })
   @IsNotEmpty()
   @IsString()
   fullName: string;
 
-  @ApiProperty()
+  @ApiProperty({
+    example: '1998-12-29',
+  })
   @IsDateString()
   dob: Date;
 
-  @ApiProperty()
+  @ApiProperty({
+    description:
+      'Has to match a regular expression: ((?=.*d)|(?=.*W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/',
+    example: 'passWord@123',
+  })
   @IsNotEmpty()
   @IsString()
   @MinLength(4)
@@ -39,35 +49,47 @@ export class RegisterDTO {
   })
   password: string;
 
-  @ApiProperty()
+  @ApiProperty({
+    example: 'passWord@123',
+  })
   @IsString()
   @MinLength(4)
   @MaxLength(20)
   @Match('password')
   passwordConfirm: string;
 
-  @ApiProperty()
+  @ApiProperty({
+    example: 'admin',
+  })
   @IsIn(['admin', 'member'])
   role: string;
 }
 
 export class UpdateProfileDTO {
-  @ApiProperty()
+  @ApiProperty({
+    example: 'Edward Le',
+  })
   @IsOptional()
   @IsString()
   fullName: string;
 
-  @ApiProperty()
+  @ApiProperty({
+    example: '1998-12-29',
+  })
   @IsOptional()
   @IsDateString()
   dob: Date;
 
-  @ApiProperty()
+  @ApiProperty({
+    example: '143 Tran Hung Dao Street P5 D3 HCM City',
+  })
   @IsOptional()
   @IsString()
   address: string;
 
-  @ApiProperty()
+  @ApiProperty({
+    example: '+84366591078',
+  })
   @IsOptional()
   @IsPhoneNumber('VN')
   phone: string;

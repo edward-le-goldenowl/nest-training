@@ -38,7 +38,6 @@ export default class PostsController {
   constructor(private readonly postsService: PostsService) {}
 
   @UseGuards(AccessTokenGuard)
-  @HttpCode(HttpStatus.OK)
   @Post(['/new'])
   @UseInterceptors(FileInterceptor('previewImage'))
   @ApiOkResponse({ description: 'Add new post' })
@@ -64,12 +63,10 @@ export default class PostsController {
     return {
       data: { post: response },
       message: successMessages.SUCCESS,
-      error: '',
     };
   }
 
   @UseGuards(AccessTokenGuard, RolesGuard)
-  @HttpCode(HttpStatus.OK)
   @Get(['/list'])
   @Roles(roles.ADMIN)
   @ApiOkResponse({ description: 'Get list posts' })
@@ -80,12 +77,10 @@ export default class PostsController {
     return {
       data: { list: response },
       message: successMessages.SUCCESS,
-      error: '',
     };
   }
 
   @UseGuards(AccessTokenGuard)
-  @HttpCode(HttpStatus.OK)
   @Get(['/:id'])
   @ApiOkResponse({ description: 'Get post by id' })
   async getPostById(
@@ -95,12 +90,10 @@ export default class PostsController {
     return {
       data: { post: response },
       message: successMessages.SUCCESS,
-      error: '',
     };
   }
 
   @UseGuards(AccessTokenGuard)
-  @HttpCode(HttpStatus.OK)
   @Patch(['/:id'])
   @UseInterceptors(FileInterceptor('previewImage'))
   @ApiOkResponse({ description: 'Update post by id' })
@@ -132,12 +125,10 @@ export default class PostsController {
     return {
       data: { post: response },
       message: successMessages.SUCCESS,
-      error: '',
     };
   }
 
   @UseGuards(AccessTokenGuard)
-  @HttpCode(HttpStatus.OK)
   @Delete(['/:id'])
   @ApiOkResponse({ description: 'Delete post by id' })
   async deletePostById(
@@ -148,12 +139,10 @@ export default class PostsController {
     return {
       data: null,
       message: successMessages.SUCCESS,
-      error: '',
     };
   }
 
   @UseGuards(AccessTokenGuard, RolesGuard)
-  @HttpCode(HttpStatus.OK)
   @Patch(['/status/:id'])
   @Roles(roles.ADMIN)
   @ApiOkResponse({ description: 'Update post status by id' })
@@ -165,7 +154,6 @@ export default class PostsController {
     return {
       data: { post: response },
       message: successMessages.SUCCESS,
-      error: '',
     };
   }
 }

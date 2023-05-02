@@ -11,12 +11,16 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 
 export class AddNewPostDTO {
-  @ApiProperty()
+  @ApiProperty({
+    example: 'Title here',
+  })
   @IsNotEmpty()
   @IsString()
   title: string;
 
-  @ApiProperty()
+  @ApiProperty({
+    example: 'Content here',
+  })
   @IsNotEmpty()
   @IsString()
   @MinLength(200)
@@ -25,12 +29,16 @@ export class AddNewPostDTO {
 }
 
 export class UpdatePostDTO {
-  @ApiProperty()
+  @ApiProperty({
+    example: 'Title here',
+  })
   @IsOptional()
   @IsString()
   title: string;
 
-  @ApiProperty()
+  @ApiProperty({
+    example: 'Content here',
+  })
   @IsOptional()
   @IsString()
   @MinLength(200)
@@ -39,23 +47,31 @@ export class UpdatePostDTO {
 }
 
 export class UpdatePostStatusDTO {
-  @ApiProperty()
+  @ApiProperty({
+    example: 'approved',
+  })
   @IsIn(['approved', 'rejected'])
   status: string;
 }
 
 export class GetListPostsDTO {
-  @ApiProperty()
+  @ApiProperty({
+    example: 1,
+  })
   @Type(() => Number)
   @IsInt()
   page: number;
 
-  @ApiProperty()
+  @ApiProperty({
+    example: 10,
+  })
   @Type(() => Number)
   @IsInt()
   limit: number;
 
-  @ApiProperty()
+  @ApiProperty({
+    example: 'pending',
+  })
   @IsOptional()
   status: string;
 }
