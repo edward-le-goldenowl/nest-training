@@ -5,7 +5,7 @@ interface IRequest extends Partial<Request> {
     refreshToken: string;
     accessToken: string;
     email: string;
-    userProfileId: string;
+    usersProfileId: string;
     password?: string;
   };
 }

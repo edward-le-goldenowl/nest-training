@@ -37,7 +37,7 @@ const baseMockUser = {
   refreshToken: 'mock_refresh_token',
   accessToken: 'mock_access_token',
   email: 'test@example.com',
-  userProfileId: 'mock_user_profile_id',
+  usersProfileId: 'mock_user_profile_id',
   password: 'mock_password',
 };
 
@@ -163,7 +163,7 @@ describe('AuthenticationService', () => {
         mockReq.user.email,
       );
     });
-    it('should throw UnauthorizedException if account does not exist with userProfileId', async () => {
+    it('should throw UnauthorizedException if account does not exist with usersProfileId', async () => {
       const mockReq = {
         user: undefined,
         res: {

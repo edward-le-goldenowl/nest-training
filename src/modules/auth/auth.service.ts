@@ -46,7 +46,7 @@ export class AuthenticationService {
   public async login(req: IRequest): Promise<ICurrentUserResponse> {
     try {
       const account = req.user;
-      if (account && account.userProfileId) {
+      if (account && account.usersProfileId) {
         const tokens = await this.getTokens(account.id, account.email);
         await this.userService.updateRefreshTokenById(
           account.id,

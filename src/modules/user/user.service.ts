@@ -16,7 +16,7 @@ import { CloudinaryService } from '@cloudinary/cloudinary.service';
 import CatchError from '@utils/catchError';
 
 import AccountEntity from './entities/account.entity';
-import UserProfileEntity from './entities/userProfile.entity';
+import UsersProfileEntity from './entities/usersProfile.entity';
 import {
   IRegisterPayload,
   IAccountPayload,
@@ -32,8 +32,8 @@ export default class UserService {
   constructor(
     @InjectRepository(AccountEntity)
     private accountRepository: Repository<AccountEntity>,
-    @InjectRepository(UserProfileEntity)
-    private userProfileRepository: Repository<UserProfileEntity>,
+    @InjectRepository(UsersProfileEntity)
+    private usersProfileRepository: Repository<UsersProfileEntity>,
     @InjectRepository(PostsEntity)
     private postsRepository: Repository<PostsEntity>,
     @InjectRepository(CommentsEntity)
@@ -71,11 +71,11 @@ export default class UserService {
           );
           dataUpdate['avatar'] = uploadResponse.secure_url;
         }
-        const updatedResponse = await this.userProfileRepository
-          .createQueryBuilder('userProfile')
+        const updatedResponse = await this.usersProfileRepository
+          .createQueryBuilder('usersProfile')
           .update()
           .set(dataUpdate)
-          .where('id = :id', { id: account.userProfileId })
+          .where('id = :id', { id: account.usersProfileId })
           .returning('*')
           .execute();
         return updatedResponse.raw;
@@ -119,10 +119,10 @@ export default class UserService {
         .where('id = :id', { id })
         .execute();
 
-      await this.userProfileRepository
-        .createQueryBuilder('userProfile')
+      await this.usersProfileRepository
+        .createQueryBuilder('usersProfile')
         .softDelete()
-        .where('id = :id', { id: account.userProfileId })
+        .where('id = :id', { id: account.usersProfileId })
         .execute();
     } catch (error) {
       throw new CatchError(error);
@@ -133,18 +133,18 @@ export default class UserService {
     try {
       const response = await this.accountRepository
         .createQueryBuilder('account')
-        .leftJoinAndSelect('account.userProfile', 'userProfile')
+        .leftJoinAndSelect('account.usersProfile', 'usersProfile')
         .select([
           'account.id AS id',
           'account.email AS email',
           'account.role AS role',
-          'userProfile.fullName AS "fullName"',
-          'userProfile.dob AS dob',
-          'userProfile.avatar AS avatar',
-          'userProfile.phone AS phone',
-          'userProfile.address AS address',
-          'userProfile.createdAt AS "createdAt"',
-          'userProfile.updatedAt AS "updatedAt"',
+          'usersProfile.fullName AS "fullName"',
+          'usersProfile.dob AS dob',
+          'usersProfile.avatar AS avatar',
+          'usersProfile.phone AS phone',
+          'usersProfile.address AS address',
+          'usersProfile.createdAt AS "createdAt"',
+          'usersProfile.updatedAt AS "updatedAt"',
         ])
         .where('account.id = :id', { id })
         .getRawOne();
@@ -208,18 +208,18 @@ export default class UserService {
         password: hashedPassword,
         role: registerData.role,
       };
-      const userProfilePayload: IUserProfilePayload = {
+      const usersProfilePayload: IUserProfilePayload = {
         fullName: registerData.fullName,
         dob: registerData.dob,
       };
       const newUserProfile =
-        this.userProfileRepository.create(userProfilePayload);
-      const savedUserProfile = await this.userProfileRepository.save(
+        this.usersProfileRepository.create(usersProfilePayload);
+      const savedUserProfile = await this.usersProfileRepository.save(
         newUserProfile,
       );
       const newUserAccount = this.accountRepository.create({
         ...accountPayload,
-        userProfileId: savedUserProfile.id,
+        usersProfileId: savedUserProfile.id,
       });
       const savedAccount = await this.accountRepository.save(newUserAccount);
       return savedAccount;

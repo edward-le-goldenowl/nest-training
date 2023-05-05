@@ -6,7 +6,7 @@ import Comments from '@comments/entities/comments.entity';
 import BaseEntity from '@common/entities/BaseEntity';
 import CommentLikes from '@comments/entities/commentLikes.entity';
 
-import UserProfile from './userProfile.entity';
+import UsersProfile from './usersProfile.entity';
 
 @Entity()
 class Account extends BaseEntity {
@@ -18,7 +18,7 @@ class Account extends BaseEntity {
   public password: string;
 
   @Column()
-  public userProfileId: string;
+  public usersProfileId: string;
 
   @Exclude({ toPlainOnly: true })
   @Column({ type: 'text', unique: true, nullable: true, select: false })
@@ -27,9 +27,9 @@ class Account extends BaseEntity {
   @Column({ nullable: true })
   public role: string;
 
-  @OneToOne(() => UserProfile, (userProfile) => userProfile.account)
+  @OneToOne(() => UsersProfile, (usersProfile) => usersProfile.account)
   @JoinColumn()
-  userProfile: UserProfile;
+  usersProfile: UsersProfile;
 
   @OneToMany(() => Posts, (posts) => posts.author)
   posts: Posts[];

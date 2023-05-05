@@ -6,7 +6,7 @@ import CommentsEntity from '@comments/entities/comments.entity';
 import { CloudinaryModule } from '@cloudinary/cloudinary.module';
 
 import AccountEntity from './entities/account.entity';
-import UserProfileEntity from './entities/userProfile.entity';
+import UsersProfileEntity from './entities/usersProfile.entity';
 
 import UserController from './user.controller';
 import UserService from './user.service';
@@ -16,7 +16,7 @@ import UserService from './user.service';
     CloudinaryModule,
     TypeOrmModule.forFeature([
       AccountEntity,
-      UserProfileEntity,
+      UsersProfileEntity,
       PostsEntity,
       CommentsEntity,
     ]),
