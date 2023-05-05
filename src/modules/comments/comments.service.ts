@@ -200,7 +200,7 @@ export default class CommentsService {
         .innerJoin('cl.comment', 'comment')
         .innerJoin('comment.post', 'post')
         .innerJoin('cl.user', 'account')
-        .innerJoin('account.userProfile', 'profile')
+        .innerJoin('account.usersProfile', 'profile')
         .select([
           'cl.id as id',
           'cl.createdAt as "createdAt"',
@@ -306,7 +306,7 @@ export default class CommentsService {
           .innerJoin('cl.comment', 'comment')
           .innerJoin('comment.post', 'post')
           .innerJoin('cl.user', 'account')
-          .innerJoin('account.userProfile', 'profile')
+          .innerJoin('account.usersProfile', 'profile')
           .select([
             'cl.id as id',
             'cl.createdAt as "createdAt"',

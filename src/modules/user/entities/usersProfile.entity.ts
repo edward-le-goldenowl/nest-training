@@ -5,7 +5,7 @@ import BaseEntity from '@common/entities/BaseEntity';
 import Account from './account.entity';
 
 @Entity()
-class UserProfile extends BaseEntity {
+class UsersProfile extends BaseEntity {
   @Column()
   public fullName: string;
 
@@ -21,8 +21,8 @@ class UserProfile extends BaseEntity {
   @Column({ nullable: true })
   public phone: string;
 
-  @OneToOne(() => Account, (account) => account.userProfile)
+  @OneToOne(() => Account, (account) => account.usersProfile)
   account: Account;
 }
 
-export default UserProfile;
+export default UsersProfile;

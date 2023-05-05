@@ -8,7 +8,7 @@ import PostsEntity from '@posts/entities/posts.entity';
 
 import UserService from '../user.service';
 import AccountEntity from '../entities/account.entity';
-import UserProfileEntity from '../entities/userProfile.entity';
+import UserProfileEntity from '../entities/usersProfile.entity';
 
 // Mock dependency
 jest.mock('@cloudinary/cloudinary.service');
@@ -20,7 +20,7 @@ describe('UserService', () => {
     email: 'example@example.com',
     password: 'password',
     role: 'user',
-    userProfileId: '12345',
+    usersProfileId: '12345',
   };
   const newMockUserProfile = {
     id: '12345',
